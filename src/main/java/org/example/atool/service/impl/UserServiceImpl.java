@@ -32,10 +32,6 @@ public class UserServiceImpl implements UserService {
             Throw.RTExp("密码格式错误");
         }
 
-//        Checker checker = CheckerFactory.get(type);
-//        if (!checker.check(registerDTO.getAccount())) {
-//            Throw.RTExp("手机号或邮箱格式错误");
-//        }
 
         String regex = regexProp.getRegex().get(type);
         if (ReUtil.isMatch(regex,registerDTO.getAccount())) {
