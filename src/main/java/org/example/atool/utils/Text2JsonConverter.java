@@ -2,13 +2,16 @@ package org.example.atool.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import lombok.NonNull;
+
 
 
 public class Text2JsonConverter {
 
-    private static final Text2JsonConverter Parser = new Text2JsonConverter();
+    public static final Text2JsonConverter Parser = new Text2JsonConverter();
 
-    public String parser(String text) throws Exception {
+
+    public String parser(@NonNull String text) throws Exception {
 
         ObjectMapper mapper = new ObjectMapper();
         ObjectNode rootNode = mapper.createObjectNode();

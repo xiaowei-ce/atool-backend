@@ -1,4 +1,4 @@
-package org.example.atool.entity.dto;
+package org.example.atool.entity.po;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,8 +9,10 @@ import lombok.ToString;
 @NoArgsConstructor
 @Data
 @ToString
-public class RegisterDTO {
-    private String account;
-    private String password;
-    private String captcha;
+public class UserDetail {
+
+  private Long userId;
+  private String username;
+  private String avatar;
+  private Long points;
 }
