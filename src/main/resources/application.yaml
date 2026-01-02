@@ -23,17 +23,20 @@ atool:
   captcha:
     captcha-code-len: 6
     types:
-      - "email"
-      - "phone"
+      - email
+      - phone
     timeout: 60
+    unit: seconds
 
   regcheck:
     regex:
         email: ^[^\s@]+@[^\s@]+\.[^\s@]+$
         phone: ^(?:(?:\+|00)86)?1(?:(?:3[\d])|(?:4[5-79])|(?:5[0-35-9])|(?:6[5-7])|(?:7[0-8])|(?:8[\d])|(?:9[01256789]))\d{8}$
         password : ^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9!@#$%^&*_+\-=]{6,24}$
-
-
+  jwt:
+    key: abdhdksjhfjk
+    expire: 604800
+    unit: seconds
 
 mybatis:
   configuration:

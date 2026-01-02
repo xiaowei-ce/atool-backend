@@ -7,4 +7,6 @@ import org.example.atool.entity.po.User;
 @Mapper
 public interface UserMapper {
     void add(@Param("user") User user);
+
+    User getByAccount(@Param("account") String account);
 }

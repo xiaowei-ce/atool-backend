@@ -5,8 +5,12 @@
 <mapper namespace="org.example.atool.mapper.UserMapper">
 
     <insert id="add" useGeneratedKeys="true" keyProperty="user.id">
-        insert into user (email, phone, password)
-        values (#{user.email},#{user.phone},#{user.password});
+        insert into user (account, password <if test="user.enable != null">, enable</if>)
+        values (#{user.account},#{user.password} <if test="user.enable != null">#{user.enable}</if> );
     </insert>
+
+    <select id="getByAccount" resultType="org.example.atool.entity.po.User">
+        select * from user where account = #{account};
+    </select>
 
 </mapper>

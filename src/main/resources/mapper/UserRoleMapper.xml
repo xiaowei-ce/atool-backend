@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.atool.mapper.UserRoleMapper">
+
+    <select id="getByUser" resultType="org.example.atool.entity.po.securityPOs.UserRole">
+        select * from user_role where user_id = #{userId};
+    </select>
+
+    <insert id="add">
+        insert into user_role (user_id <if test="userRole.roleId != null">, role_id</if>)
+        values (#{userRole.userId} <if test="userRole.roleId != null">,#{userRole.roleId}</if> );
+    </insert>
+
+</mapper>

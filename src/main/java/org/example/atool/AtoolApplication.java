@@ -10,7 +10,5 @@ public class AtoolApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(AtoolApplication.class, args);
-
     }
-
 }

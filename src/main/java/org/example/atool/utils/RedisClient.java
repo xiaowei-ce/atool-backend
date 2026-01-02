@@ -15,8 +15,8 @@ public class RedisClient {
         template.opsForValue().set(key, val);
     }
 
-    public void set(String key, String val, Long time){
-        template.opsForValue().set(key,val,time, TimeUnit.SECONDS);
+    public void set(String key, String val, Long time, TimeUnit unit){
+        template.opsForValue().set(key,val,time, unit);
     }
 
     public String get(String key){

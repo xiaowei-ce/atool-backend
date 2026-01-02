@@ -7,17 +7,17 @@
         insert into user_detail (
         user_id
         <trim prefixOverrides=",">
-        <if test="detail.username">, username</if>
-        <if test="detail.avatar">, avatar</if>
-        <if test="detail.points">,points</if>
+        <if test="detail.username != null">, username</if>
+        <if test="detail.avatar != null">, avatar</if>
+        <if test="detail.points != null">,points</if>
         </trim>
         )
         values (
         #{detail.userId}
         <trim prefixOverrides=",">
-        <if test="detail.username">, #{detail.username}</if>
-        <if test="detail.avatar">, #{detail.avatar}</if>
-        <if test="detail.avatar">, #{detail.points}</if>
+        <if test="detail.username != null">, #{detail.username}</if>
+        <if test="detail.avatar != null">, #{detail.avatar}</if>
+        <if test="detail.avatar != null">, #{detail.points}</if>
         </trim>
         );
     </insert>

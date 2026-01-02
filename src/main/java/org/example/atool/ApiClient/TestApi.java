@@ -1,10 +1,8 @@
-package org.example.atool.HttpApi;
+package org.example.atool.ApiClient;
 
 import com.dtflys.forest.annotation.GetRequest;
 import com.dtflys.forest.annotation.Var;
 import org.example.atool.entity.dto.TestDTO;
-
-import java.util.Map;
 
 public interface TestApi {
 
