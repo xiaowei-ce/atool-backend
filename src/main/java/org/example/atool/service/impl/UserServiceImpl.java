@@ -1,8 +1,10 @@
 package org.example.atool.service.impl;
 
+import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import org.example.atool.entity.dto.LoginDTO;
@@ -10,6 +12,7 @@ import org.example.atool.entity.dto.RegisterDTO;
 import org.example.atool.entity.po.User;
 import org.example.atool.entity.po.UserDetail;
 import org.example.atool.entity.po.securityPOs.UserRole;
+import org.example.atool.entity.vo.UserDetailVO;
 import org.example.atool.mapper.UserDetailMapper;
 import org.example.atool.mapper.UserMapper;
 import org.example.atool.mapper.UserRoleMapper;
@@ -18,6 +21,7 @@ import org.example.atool.props.RegexProp;
 import org.example.atool.service.CaptchaService;
 import org.example.atool.service.UserService;
 import org.example.atool.utils.JSONUtil;
+import org.example.atool.utils.PrincipalUtil;
 import org.example.atool.utils.RedisClient;
 import org.example.atool.utils.Throw;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -79,9 +83,11 @@ public class UserServiceImpl implements UserService {
     public String login(LoginDTO loginDTO, String authorization) {
 
         if (StrUtil.isNotBlank(authorization) && JWTUtil.verify(authorization, jWTProp.getKey())) {
+            JSONObject object = (JSONObject) JWTUtil.parseToken(authorization).getPayload("loginDTO");
 
-            LoginDTO dto = (LoginDTO) JWTUtil.parseToken(authorization).getPayload("loginDTO");
-            if(ObjectUtil.equals(loginDTO,dto)){
+            LoginDTO dto =  JSONUtil.toBean(object, LoginDTO.class);
+
+            if (ObjectUtil.equals(loginDTO, dto)) {
                 redisClient.del(StrUtil.format("token:{}", authorization));
             }
         }
@@ -102,8 +108,20 @@ public class UserServiceImpl implements UserService {
         };
         String token = JWTUtil.createToken(payload, jWTProp.getKey());
         String key = StrUtil.format("token:{}", token);
-        redisClient.set(key, JSONUtil.toJsonStrNoIgnoreNull(authenticate.getPrincipal()), jWTProp.getExpire(), jWTProp.getUnit());
+        redisClient.set(key, JSONUtil.toJsonStrIncludeNull(authenticate.getPrincipal()), jWTProp.getExpire(), jWTProp.getUnit());
         return token;
+    }
+
+    @Override
+    public UserDetailVO details() {
+        User user = PrincipalUtil.user();
+        Long id = user.getId();
+        UserDetailVO vo = new UserDetailVO();
+        vo.setStaus(user.getEnable() ? "帐号正常" : "帐号被停用");
+        vo.setAccount(user.getAccount());
+        UserDetail userDetail = userDetailMapper.getByUserId(id);
+        BeanUtil.copyProperties(userDetail,vo);
+        return vo;
     }
 
 }

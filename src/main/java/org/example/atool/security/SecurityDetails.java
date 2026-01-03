@@ -21,7 +21,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class SecurityUserDetails implements UserDetails {
+public class SecurityDetails implements UserDetails {
 
     private User user;
     

@@ -18,7 +18,7 @@ import java.util.Objects;
 
 @Service
 @AllArgsConstructor
-public class UserDetailServiceImpl implements UserDetailsService {
+public class SecurityDetailServiceImpl implements UserDetailsService {
     private final UserMapper userMapper;
     private final UserRoleMapper userRoleMapper;
     private final RoleMapper roleMapper;
@@ -33,7 +33,7 @@ public class UserDetailServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException("帐号不存在");
         }
 
-        SecurityUserDetails details = new SecurityUserDetails();
+        SecurityDetails details = new SecurityDetails();
         details.setUser(user);
 
         List<UserRole> userRoles = userRoleMapper.getByUser(user.getId());

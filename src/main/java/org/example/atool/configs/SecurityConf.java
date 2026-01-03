@@ -1,7 +1,9 @@
 package org.example.atool.configs;
 
+import lombok.RequiredArgsConstructor;
 import org.example.atool.components.JWTFilter;
 import org.example.atool.components.LogoutHandler;
+import org.example.atool.components.UnAccessDeniedHandler;
 import org.example.atool.components.UnAuthenticationEntryPoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,15 +19,12 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
+@RequiredArgsConstructor
 public class SecurityConf {
 
     private final UnAuthenticationEntryPoint unAuthenticationEntryPoint;
     private final LogoutHandler logoutHandler;
-
-    public SecurityConf(UnAuthenticationEntryPoint unAuthenticationEntryPoint, LogoutHandler logoutHandler) {
-        this.unAuthenticationEntryPoint = unAuthenticationEntryPoint;
-        this.logoutHandler = logoutHandler;
-    }
+    private final UnAccessDeniedHandler unAccessDeniedHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -68,9 +67,11 @@ public class SecurityConf {
                     @Override
                     public void customize(ExceptionHandlingConfigurer<HttpSecurity> configurer) {
                         configurer.authenticationEntryPoint(unAuthenticationEntryPoint);
+                        configurer.accessDeniedHandler(unAccessDeniedHandler);
 
                     }
                 })
+
 
                 .logout(new Customizer<LogoutConfigurer<HttpSecurity>>() {
                     @Override

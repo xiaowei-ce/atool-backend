@@ -1,5 +1,6 @@
 package org.example.atool.entity.po;
 
+import com.baomidou.mybatisplus.annotation.TableLogic;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,5 +17,7 @@ public class User {
   private String password;
 
   private Boolean enable;
-  private Boolean delete;
+
+  @TableLogic(delval = "1", value = "0")
+  private Boolean deleted;
 }

@@ -8,7 +8,7 @@ import java.io.PrintWriter;
 public class ServletUtil {
 
     public static void write(HttpServletResponse response, Object obj){
-        write(response , JSONUtil.toJsonStrNoIgnoreNull(obj));
+        write(response , JSONUtil.toJsonStrIncludeNull(obj));
     }
 
     public static void write(HttpServletResponse response, String str){

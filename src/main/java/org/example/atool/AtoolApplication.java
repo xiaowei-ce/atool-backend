@@ -6,7 +6,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@ForestScan(basePackages = "org.example.atool.HttpApi")
+@ForestScan(basePackages = "org.example.atool.HttpClient")
 @MapperScan(basePackages = "org.example.atool.mapper")
 public class AtoolApplication {
 

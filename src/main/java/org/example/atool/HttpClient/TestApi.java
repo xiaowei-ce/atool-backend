@@ -1,4 +1,4 @@
-package org.example.atool.ApiClient;
+package org.example.atool.HttpClient;
 
 import com.dtflys.forest.annotation.GetRequest;
 import com.dtflys.forest.annotation.Var;
@@ -8,4 +8,6 @@ public interface TestApi {
 
     @GetRequest(url = "https://imgapi.jinghuashang.cn/random?type={type}", dataType = "json")
     TestDTO test(@Var("type") String type);
+
+
 }

@@ -22,4 +22,12 @@
         );
     </insert>
 
+    <select id="getByUserId" resultType="org.example.atool.entity.po.UserDetail">
+        select * from user_detail where user_id = #{userId};
+    </select>
+
+    <update id="deductPoint">
+        update user_detail set points = ifnull(points,200)- #{point} where user_id = #{userID};
+    </update>
+
 </mapper>
