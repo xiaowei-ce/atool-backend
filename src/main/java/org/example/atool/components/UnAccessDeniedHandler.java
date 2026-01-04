@@ -12,6 +12,6 @@ import org.springframework.stereotype.Component;
 public class UnAccessDeniedHandler implements AccessDeniedHandler {
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) {
-        ServletUtil.write(response, Result.err("权限不足",null));
+        ServletUtil.write(response, Result.denied("权限不足",null));
     }
 }

@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.atool.mapper.UserMapper;
 import org.example.atool.props.CaptchaProp;
 import org.example.atool.service.CaptchaService;
+import org.example.atool.components.sender.captchaSender.AutoCaptchaSender;
 import org.example.atool.utils.RedisClient;
 import org.example.atool.utils.Throw;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     private final RedisClient redisClient;
     private final CaptchaProp prop;
     private final UserMapper userMapper;
+    private final AutoCaptchaSender captchaSender;
 
     @Override
     public void send(String type, String target) {
@@ -34,12 +36,15 @@ public class CaptchaServiceImpl implements CaptchaService {
             Throw.BizExp("不允许的验证码类型");
         }
 
-        String code = RandomUtil.randomNumbers(prop.getCaptchaCodeLen());
+        String code = RandomUtil.randomNumbers(prop.getCaptchaLen());
         String key = StrUtil.format("{}:{}",type,target);
         //todo send api
         if(redisClient.has(key)){
             Throw.BizExp("请勿一分钟内重复获取");
         }
+
+        captchaSender.send(type, code, target);
+
         redisClient.set(key,code, prop.getTimeout(),prop.getUnit());
     }
 

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/sky")
 public class SkyController {
 
-
     private final SkyService skyService;
 
     @GetMapping("/data")

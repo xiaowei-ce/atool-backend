@@ -12,18 +12,27 @@ spring:
       database: 0
       host: 192.168.5.3
       port: 6379
-
+  mail:
+    host: smtp.qq.com
+    username: 3684779724@qq.com
+    password: ogrzjsznsjxdciic
+    port: 465
+    protocol: smtp
+    ssl:
+      enabled: true
 forest:
   backend: okhttp3
 
+
 atool:
   captcha:
-    captcha-code-len: 6
+    captcha-len: 6
     types:
       - email
       - phone
     timeout: 60
     unit: seconds
+    email-template: classpath*:/templates/captcha.html
   regcheck:
     regex:
         email: ^[^\s@]+@[^\s@]+\.[^\s@]+$

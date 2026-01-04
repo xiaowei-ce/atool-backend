@@ -18,6 +18,10 @@ public class Result {
         return custom(500,msg,data);
     }
 
+    public static Result denied(String msg, Object data){
+        return custom(300,msg,data);
+    }
+
     public static Result custom(Integer code, String msg, Object data){
         return new Result(code,msg,data);
     }

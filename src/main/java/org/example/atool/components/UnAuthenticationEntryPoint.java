@@ -12,6 +12,6 @@ import org.springframework.stereotype.Component;
 public class UnAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-        ServletUtil.write(response, Result.err("未授权的访问",null));
+        ServletUtil.write(response, Result.denied("未授权的访问",null));
     }
 }

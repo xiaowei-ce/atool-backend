@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>验证码邮件</title>
+    <style type="text/css">
+        /* 重置样式 */
+        body, table, td, div, p, a {
+            margin: 0;
+            padding: 0;
+            border: 0;
+            font-size: 100%;
+            font: inherit;
+            vertical-align: baseline;
+        }
+
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            line-height: 1.4;
+            color: #333333;
+            background-color: #f6f6f6;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* 响应式容器 */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+
+        /* 头部样式 */
+        .email-header {
+            padding: 30px 20px;
+            background-color: #4a6ee0;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .email-header h1 {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        /* 内容区域 */
+        .email-body {
+            padding: 40px 30px;
+        }
+
+        .code-section {
+            text-align: center;
+            margin: 30px 0;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px dashed #dee2e6;
+        }
+
+        .verification-code {
+            font-size: 36px;
+            font-weight: bold;
+            letter-spacing: 8px;
+            color: #e74c3c;
+            padding: 15px;
+            margin: 20px 0;
+            background-color: #fff;
+            border-radius: 5px;
+            display: inline-block;
+            font-family: monospace;
+        }
+
+        /* 内容文本样式 */
+        .email-body h2 {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .email-body p {
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.6;
+            color: #555555;
+        }
+
+        .highlight {
+            background-color: #fff3cd;
+            padding: 10px 15px;
+            border-left: 4px solid #ffc107;
+            margin: 20px 0;
+            font-size: 14px;
+        }
+
+        /* 底部样式 */
+        .email-footer {
+            padding: 25px 30px;
+            background-color: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            text-align: center;
+            font-size: 14px;
+            color: #777777;
+        }
+
+        .email-footer a {
+            color: #4a6ee0;
+            text-decoration: none;
+        }
+
+        /* 响应式调整 */
+        @media screen and (max-width: 600px) {
+            .email-body, .email-footer {
+                padding: 20px 15px;
+            }
+
+            .verification-code {
+                font-size: 28px;
+                letter-spacing: 6px;
+                padding: 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+<!-- 邮件容器 -->
+<table width="100%" cellpadding="0" cellspacing="0" border="0" bgcolor="#f6f6f6">
+    <tr>
+        <td align="center" valign="top">
+            <!-- 主要内容区域 -->
+            <table class="email-container" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <!-- 头部 -->
+                <tr>
+                    <td class="email-header">
+                        <h1>安全验证码</h1>
+                    </td>
+                </tr>
+
+                <!-- 正文内容 -->
+                <tr>
+                    <td class="email-body">
+                        <h2>您好！</h2>
+                        <p>您正在进行账户安全操作，本次请求的验证码为：</p>
+
+                        <!-- 验证码显示区域 -->
+                        <div class="code-section">
+                            <p>请使用以下验证码完成验证：</p>
+                            <div class="verification-code">{}</div>
+                            <p>验证码 <strong>15分钟</strong> 内有效，请尽快完成验证。</p>
+                        </div>
+
+                        <p>如果您没有进行此操作，请忽略此邮件，您的账户将不会受到影响。</p>
+
+                        <!-- 安全提示 -->
+                        <div class="highlight">
+                            <strong>安全提示：</strong><br>
+                            请勿将验证码告知他人，包括我们的客服人员。我们不会通过电话、短信或邮件向您索要验证码。
+                        </div>
+
+                        <p>此邮件由系统自动发送，请勿直接回复。</p>
+                        <p>如遇到问题，请联系我们的客服团队获取帮助。</p>
+                    </td>
+                </tr>
+
+                <!-- 底部 -->
+                <tr>
+                    <td class="email-footer">
+                        <p>© 2023 公司名称. 保留所有权利.</p>
+                        <p>
+                            <a href="#">隐私政策</a> |
+                            <a href="#">服务条款</a> |
+                            <a href="#">帮助中心</a>
+                        </p>
+                        <p style="font-size: 12px; margin-top: 10px;">
+                            此为系统自动发送邮件，请勿回复。
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+</html>
