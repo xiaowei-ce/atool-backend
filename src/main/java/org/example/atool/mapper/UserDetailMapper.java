@@ -11,4 +11,6 @@ public interface UserDetailMapper {
     UserDetail getByUserId(@Param("userId") Long userId);
 
     void deductPoint(@Param("userId") Long userId ,@Param("deduct") Integer deduct);
+
+    void updatePoint(@Param("userId") Long userId, @Param("point") Long point);
 }

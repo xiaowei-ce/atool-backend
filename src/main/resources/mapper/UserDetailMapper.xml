@@ -27,7 +27,12 @@
     </select>
 
     <update id="deductPoint">
-        update user_detail set points = ifnull(points,200)- #{point} where user_id = #{userID};
+        update user_detail set points = ifnull(points,200)- #{deduct} where user_id = #{userId};
+    </update>
+
+
+    <update id="updatePoint">
+        update user_detail set points = #{point} where user_id = #{userId};
     </update>
 
 </mapper>

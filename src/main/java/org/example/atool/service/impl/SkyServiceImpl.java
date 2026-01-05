@@ -5,6 +5,7 @@ import cn.hutool.json.JSONObject;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.example.atool.HttpClient.SkyApiClient;
+import org.example.atool.entity.po.UserDetail;
 import org.example.atool.mapper.UserDetailMapper;
 import org.example.atool.props.SkyApiProp;
 import org.example.atool.service.SkyService;
@@ -28,6 +29,14 @@ public class SkyServiceImpl implements SkyService {
     @Transactional
     public String data(String code) {
         String dataStr = skyApiClient.data(skyApiProp.getKey(), code);
+
+        Long userId = PrincipalUtil.user().getId();
+        UserDetail byUserId = userDetailMapper.getByUserId(userId);
+        Long points = byUserId.getPoints();
+        if(points < 50){
+            Throw.BizExp("积分不足！");
+        }
+
         //这里是api供应商太傻逼了，正常数据用text报错用json....
         if (JSONUtil.isTypeJSON(dataStr)) {
             JSONObject object = JSONUtil.parseObj(dataStr);
@@ -38,19 +47,6 @@ public class SkyServiceImpl implements SkyService {
                 Throw.BizExp("api出错，请联系管理员");
             }
         }
-
-
-//        Map<String, String> data = TextParser.hutoolParseTextContent(dataStr);
-//        boolean hasHeightData = data.containsKey("身高解析结果_体型值") ||
-//                data.containsKey("身高解析结果_身高值") ||
-//                data.containsKey("当前角色服装_发型");
-//
-//        boolean hasOutfitData = data.containsKey("当前角色服装_发型") ||
-//                data.containsKey("当前角色服装_面具");
-//        if (hasHeightData && hasOutfitData) {
-//            userDetailMapper.deductPoint(PrincipalUtil.user().getId(),120);
-//            //todo
-//        }
 
         double similar = StrUtil.similar(dataStr, """
                 身高解析结果：
@@ -73,11 +69,10 @@ public class SkyServiceImpl implements SkyService {
                 查询耗时: 1.65687 s
                 查询时间：15时35分25秒""");
         if(similar > 0.5D && StrUtil.containsAll(dataStr,"身高解析结果","当前角色服装","查询耗时","查询时间","身高值","当前身高")){
-            userDetailMapper.deductPoint(PrincipalUtil.user().getId(),120);
+            userDetailMapper.updatePoint(userId, points - 50);
         }else{
             Throw.BizExp(dataStr);
         }
-
         return dataStr;
     }
 }

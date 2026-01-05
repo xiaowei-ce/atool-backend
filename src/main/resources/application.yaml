@@ -22,6 +22,7 @@ spring:
       enabled: true
 forest:
   backend: okhttp3
+  log-response-status: false
 
 
 atool:

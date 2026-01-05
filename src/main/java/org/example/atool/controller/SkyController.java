@@ -1,5 +1,6 @@
 package org.example.atool.controller;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.example.atool.entity.Result;
 import org.example.atool.service.SkyService;
@@ -16,7 +17,10 @@ public class SkyController {
     private final SkyService skyService;
 
     @GetMapping("/data")
-    public Result data(@RequestParam("code") String code){
+    public Result data(@RequestParam(value = "code" , required = false) String code){
+        if(StrUtil.isBlank(code)){
+            return Result.err("光遇代码为空",null);
+        }
         String data = skyService.data(code);
         return Result.ok("ok",data);
     }

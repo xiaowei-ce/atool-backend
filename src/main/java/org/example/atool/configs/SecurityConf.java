@@ -69,7 +69,6 @@ public class SecurityConf {
                     public void customize(ExceptionHandlingConfigurer<HttpSecurity> configurer) {
                         configurer.authenticationEntryPoint(unAuthenticationEntryPoint);
                         configurer.accessDeniedHandler(unAccessDeniedHandler);
-
                     }
                 })
 
