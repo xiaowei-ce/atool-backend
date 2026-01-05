@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.atool.entity.Result;
 import org.example.atool.utils.RedisClient;
 import org.example.atool.utils.ServletUtil;
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class LogoutHandler implements LogoutSuccessHandler {
 
     private final RedisClient redisClient;
@@ -21,10 +23,13 @@ public class LogoutHandler implements LogoutSuccessHandler {
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String token = request.getHeader("Authorization");
         if (StrUtil.isNotBlank(token)) {
+            log.info("{} try logout",token);
             if (!redisClient.del(StrUtil.format("token:{}", token))) {
+                log.info("{} logout failed",token);
                 ServletUtil.write(response, Result.ok("退出登录失败", null));
                 return;
             }
+            log.info("{} logout ok",token);
             ServletUtil.write(response, Result.ok("退出登录成功", null));
         }
     }

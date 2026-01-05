@@ -48,11 +48,10 @@ atool:
       url: https://ovoav.com/api/sky/sgwz/sgd
       key: Y0L4u3qMZvtNI
 
-#mybatis:
-#  configuration:
-#    map-underscore-to-camel-case: true
-#  mapper-locations: classpath:mapper/*.xml
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
+
+logging:
+  config: classpath:logback.xml

@@ -28,7 +28,7 @@ public class HutoolTextToJsonConverter extends TextToJsonConverter {
 
         try {
             // 解析文本内容
-            Map<String, String> parsedData = TextParser.hutoolParseTextContent(text);
+            Map<String, String> parsedData = TextParser.parseTextContent(text);
 
             // 验证是否解析到了必要的数据
             validateParsedData(parsedData);

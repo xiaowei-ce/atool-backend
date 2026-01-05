@@ -4,10 +4,12 @@ import com.dtflys.forest.springboot.annotation.ForestScan;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
 
 @SpringBootApplication
 @ForestScan(basePackages = "org.example.atool.HttpClient")
 @MapperScan(basePackages = "org.example.atool.mapper")
+@EnableAspectJAutoProxy
 public class AtoolApplication {
 
     public static void main(String[] args) {

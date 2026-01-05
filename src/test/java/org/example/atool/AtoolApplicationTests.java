@@ -1,8 +1,6 @@
 package org.example.atool;
 
-import org.example.atool.props.CaptchaProp;
-import org.example.atool.service.CaptchaService;
-import org.example.atool.components.sender.EmailSender;
+import org.example.atool.components.sender.captchaSender.AutoCaptchaSender;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -12,11 +10,7 @@ class AtoolApplicationTests {
 
 
     @Autowired
-    private EmailSender emailService;
-    @Autowired
-    private CaptchaProp captchaProp;
-    @Autowired
-    private CaptchaService captchaService;
+    private AutoCaptchaSender autoCaptchaSender;
 
     @Test
     void contextLoads() {
@@ -24,8 +18,12 @@ class AtoolApplicationTests {
 
 //        System.out.println(EmailFormat.captchaFmt(captchaProp.getEmailTemplate(),"78645"));
 
-        captchaService.send("email","starryflow@outlook.com");
+//        captchaService.send("email","starryflow@outlook.com");
 
+//        System.out.println(StrFmt.fmt("{\"code\":\"#{fmt}\",\"min\":\"#{fmt}\"}", "#{fmt}", "43545", captchaProp.getTimeOutAsMin()));
+//        System.out.println(StrFmt.fmt("{\"code\":\"#{fmt}\",\"min\":\"#{fmt}\"}", "#{fmt}", "23549", captchaProp.getTimeoutAs(TimeUnit.MINUTES)));
 //        emailService.send("TestEmail","hello this is test email","starryflow@outlook.com");
+
+        autoCaptchaSender.send("phone","666666","13479066201");
     }
 }

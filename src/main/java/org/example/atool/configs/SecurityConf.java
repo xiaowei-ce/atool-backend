@@ -56,7 +56,8 @@ public class SecurityConf {
                         registry.requestMatchers(
                                 "/user/login",
                                 "/user/register",
-                                "/captcha/send"
+                                "/captcha/send",
+                                "/test"
                         ).permitAll();
                         registry.anyRequest().authenticated();
                     }

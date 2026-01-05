@@ -16,10 +16,10 @@ import java.util.concurrent.TimeUnit;
 @Component
 @ConfigurationProperties(prefix = "atool.captcha")
 public class CaptchaProp {
-    private Integer captchaLen = 6;
+    private Long captchaLen = 6L;
     private List<String> types;
     private Long timeout = 60L;
-    private TimeUnit unit;
+    private TimeUnit unit = TimeUnit.SECONDS;
 
     private StringBuilder emailTemplate = new StringBuilder();
 
@@ -44,5 +44,9 @@ public class CaptchaProp {
     }
     public String getEmailTemplate() {
         return emailTemplate.toString();
+    }
+
+    public Long getTimeoutAs(TimeUnit as){
+        return as.convert(this.timeout,this.unit);
     }
 }
