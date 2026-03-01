@@ -17,12 +17,18 @@ public class ExpHandler {
     @ExceptionHandler(RuntimeException.class)
     public Result RTExp(RuntimeException exp){
         log.error("{}{}","RTExp -> ", mkMsg( exp));
-        return Result.err("服务内部错误！", null);
+        return Result.err(exp.getMessage(), null);
     }
 
     @ExceptionHandler(BizException.class)
     public Result BizExp(BizException exp){
         log.error("{}{}","BizExp ", mkMsg(exp));
+        return Result.err(exp.getMessage(), null);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public Result Exp(Exception exp){
+        log.error("{}{}","Exp ",mkMsg(exp));
         return Result.err(exp.getMessage(), null);
     }
 

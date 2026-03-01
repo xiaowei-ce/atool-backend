@@ -12,5 +12,6 @@ public class UserDetailVO {
     private String username;
     private String avatar;
     private Long points;
-    private String staus;
+    private String status;
+    private Long count;
 }

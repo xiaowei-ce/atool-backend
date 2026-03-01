@@ -10,15 +10,15 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class CORSConfig {
 
     @Bean
-    public WebMvcConfigurer webMvcConfigurer(){
+    public WebMvcConfigurer webMvcConfigurer() {
         return new WebMvcConfigurer() {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("http://127.0.0.1")
+                        .allowedOrigins("http://localhost:5173","http://skyapi.with.us.in","http://sky.with.us.in")
                         .allowCredentials(true)
                         .allowedMethods("*")
-                        .maxAge(5000)
+                        .maxAge(3600L)
                         .allowedHeaders("*");
             }
         };

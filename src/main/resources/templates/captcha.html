@@ -134,7 +134,7 @@
                 <!-- 头部 -->
                 <tr>
                     <td class="email-header">
-                        <h1>安全验证码</h1>
+                        <h1>#{fmt}安全验证码</h1>
                     </td>
                 </tr>
 
@@ -142,16 +142,16 @@
                 <tr>
                     <td class="email-body">
                         <h2>您好！</h2>
-                        <p>您正在进行账户安全操作，本次请求的验证码为：</p>
+                        <p>您正在进行<strong>#{fmt}</strong>操作，本次请求的验证码为：</p>
 
                         <!-- 验证码显示区域 -->
                         <div class="code-section">
                             <p>请使用以下验证码完成验证：</p>
-                            <div class="verification-code">#{captchaCode}</div>
-                            <p>验证码 <strong>15分钟</strong> 内有效，请尽快完成验证。</p>
+                            <div class="verification-code">#{fmt}</div>
+                            <p>验证码 <strong>#{fmt}分钟</strong> 内有效，请尽快验证。</p>
                         </div>
 
-                        <p>如果您没有进行此操作，请忽略此邮件，您的账户将不会受到影响。</p>
+                        <p>如果您没有进行此操作，请忽略此邮件，不会有事情发生。</p>
 
                         <!-- 安全提示 -->
                         <div class="highlight">
@@ -160,24 +160,24 @@
                         </div>
 
                         <p>此邮件由系统自动发送，请勿直接回复。</p>
-                        <p>如遇到问题，请联系我们的客服团队获取帮助。</p>
+                        <p>如遇到问题，请联系我们获取帮助。</p>
                     </td>
                 </tr>
 
                 <!-- 底部 -->
-                <tr>
-                    <td class="email-footer">
-                        <p>© 2023 公司名称. 保留所有权利.</p>
-                        <p>
-                            <a href="#">隐私政策</a> |
-                            <a href="#">服务条款</a> |
-                            <a href="#">帮助中心</a>
-                        </p>
-                        <p style="font-size: 12px; margin-top: 10px;">
-                            此为系统自动发送邮件，请勿回复。
-                        </p>
-                    </td>
-                </tr>
+<!--                <tr>-->
+<!--                    <td class="email-footer">-->
+<!--                        <p>© 2026 atool. 保留所有权利.</p>-->
+<!--                        <p>-->
+<!--                            <a href="#">隐私政策</a> |-->
+<!--                            <a href="#">服务条款</a> |-->
+<!--                            <a href="#">帮助中心</a>-->
+<!--                        </p>-->
+<!--                        <p style="font-size: 12px; margin-top: 10px;">-->
+<!--                            此为系统自动发送邮件，请勿回复。-->
+<!--                        </p>-->
+<!--                    </td>-->
+<!--                </tr>-->
             </table>
         </td>
     </tr>

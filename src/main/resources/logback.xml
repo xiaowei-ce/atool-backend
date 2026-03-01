@@ -161,7 +161,7 @@
         <appender-ref ref="CONSOLE" />
         <queueSize>${ASYNC_QUEUE_SIZE}</queueSize>
         <discardingThreshold>${ASYNC_DISCARDING_THRESHOLD}</discardingThreshold>
-        <includeCallerData>false</includeCallerData>
+        <includeCallerData>true</includeCallerData>
     </appender>
 
     <!-- 根日志配置 -->
@@ -191,6 +191,5 @@
         <appender-ref ref="ASYNC_ERROR" />
         <appender-ref ref="ASYNC_CONSOLE" />
     </logger>
-
 
 </configuration>

@@ -18,35 +18,44 @@ import java.util.concurrent.TimeUnit;
 public class CaptchaProp {
     private Long captchaLen = 6L;
     private List<String> types;
-    private Long timeout = 60L;
-    private TimeUnit unit = TimeUnit.SECONDS;
+
+    private Long expire = 120L;
+    private TimeUnit expireUnit = TimeUnit.SECONDS;
+
+    private Long resendIn = 60L;
+    private TimeUnit resendUnit = TimeUnit.SECONDS;
 
     private StringBuilder emailTemplate = new StringBuilder();
 
     public void setEmailTemplate(String location) {
         String noClassPath = location;
         try {
-            if(StrUtil.contains(location,"classpath:")){
-                noClassPath = StrUtil.removePrefix(location,"classpath:");
-            }else if(StrUtil.contains(location,"classpath*:")) {
+            if (StrUtil.contains(location, "classpath:")) {
+                noClassPath = StrUtil.removePrefix(location, "classpath:");
+            } else if (StrUtil.contains(location, "classpath*:")) {
                 noClassPath = StrUtil.removePrefix(location, "classpath*:");
             }
             ClassPathResource resource = new ClassPathResource(noClassPath);
             BufferedReader reader = resource.getReader(StandardCharsets.UTF_8);
             char[] buffer = new char[64];
             int index;
-            while ((index = reader.read(buffer)) > 0){
-                emailTemplate.append(buffer,0,index);
+            while ((index = reader.read(buffer)) > 0) {
+                emailTemplate.append(buffer, 0, index);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
+
     public String getEmailTemplate() {
         return emailTemplate.toString();
     }
 
-    public Long getTimeoutAs(TimeUnit as){
-        return as.convert(this.timeout,this.unit);
+    public Long getExpireAs(TimeUnit as) {
+        return as.convert(this.expire, this.expireUnit);
+    }
+
+    public Object getResendInAs(TimeUnit as) {
+        return as.convert(this.resendIn,this.resendUnit);
     }
 }

@@ -1,6 +1,6 @@
 package org.example.atool;
 
-import org.example.atool.components.sender.captchaSender.AutoCaptchaSender;
+import org.example.atool.mapper.PointKeysMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -8,22 +8,29 @@ import org.springframework.boot.test.context.SpringBootTest;
 @SpringBootTest
 class AtoolApplicationTests {
 
-
     @Autowired
-    private AutoCaptchaSender autoCaptchaSender;
+    private PointKeysMapper pointKeysMapper;
 
     @Test
     void contextLoads() {
+//
+//        List<String> txt = new ArrayList<>(200);
+//        List<PointKeys> sql = new ArrayList<>(200);
+//
+//        FileWriter writer = new FileWriter("./key.txt");
+//        for (int i = 0; i < 150; i++) {
+//            String randomed = RandomUtil.randomString(16);
+//            txt.add("激活码："+randomed);
+//            PointKeys keys = new PointKeys();
+//            keys.setKey(randomed);
+//            keys.setPoints(100L);
+//            sql.add(keys);
+//        }
+//        writer.writeLines(txt,true);
+//        pointKeysMapper.addBatch(sql);
+//    }
 
-
-//        System.out.println(EmailFormat.captchaFmt(captchaProp.getEmailTemplate(),"78645"));
-
-//        captchaService.send("email","starryflow@outlook.com");
-
-//        System.out.println(StrFmt.fmt("{\"code\":\"#{fmt}\",\"min\":\"#{fmt}\"}", "#{fmt}", "43545", captchaProp.getTimeOutAsMin()));
-//        System.out.println(StrFmt.fmt("{\"code\":\"#{fmt}\",\"min\":\"#{fmt}\"}", "#{fmt}", "23549", captchaProp.getTimeoutAs(TimeUnit.MINUTES)));
-//        emailService.send("TestEmail","hello this is test email","starryflow@outlook.com");
-
-        autoCaptchaSender.send("phone","666666","13479066201");
+//        boolean b = RegexUtil.matchAny("D22Y-WGAZ-KPGG", "^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$", "^[A-Z0-9]{4}-[A-Z0-9]{4}-[A-Z0-9]{4}$");
+//        System.out.println(b);
     }
 }

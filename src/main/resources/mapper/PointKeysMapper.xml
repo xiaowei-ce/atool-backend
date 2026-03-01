@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.atool.mapper.PointKeysMapper">
+    <select id="get" resultType="org.example.atool.entity.po.PointKeys">
+        select * from point_keys where `key` = #{key};
+    </select>
+
+    <update id="update">
+        update point_keys
+        <set>
+            <if test="pointKeys.points != null"> points = #{pointKeys.points} </if>
+            <if test="pointKeys.used != null"> ,used = #{pointKeys.used} </if>
+            <if test="pointKeys.who != null and pointKeys.who != ''">, who = #{pointKeys.who} </if>
+        </set>
+        where `key` = #{pointKeys.key};
+    </update>
+
+    <insert id="add">
+        insert into point_keys (`key`, points
+        <if test="pointKeys.used != null"> ,used </if>)
+        values (
+        points = #{pointKeys.key}, points = #{pointKeys.points}
+        <if test="pointKeys.used != null"> ,used = #{pointKeys.used} </if>
+        );
+    </insert>
+
+    <insert id="addBatch">
+        insert into point_keys (`key`, points)
+        values
+        <foreach collection="list" separator="," item="it">
+           ( #{it.key}, #{it.points} )
+        </foreach>;
+    </insert>
+
+</mapper>

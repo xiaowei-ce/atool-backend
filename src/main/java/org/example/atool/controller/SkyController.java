@@ -17,11 +17,11 @@ public class SkyController {
     private final SkyService skyService;
 
     @GetMapping("/data")
-    public Result data(@RequestParam(value = "code" , required = false) String code){
-        if(StrUtil.isBlank(code)){
+    public Result data(@RequestParam(value = "id", required = false) String id){
+        if(StrUtil.isBlank(id)){
             return Result.err("光遇代码为空",null);
         }
-        String data = skyService.data(code);
+        String data = skyService.data(id);
         return Result.ok("ok",data);
     }
 }

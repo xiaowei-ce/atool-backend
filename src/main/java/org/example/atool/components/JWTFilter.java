@@ -32,32 +32,28 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain filterChain) throws ServletException, IOException {
         String authorization = request.getHeader("Authorization");
 
-        if (StrUtil.isBlank(authorization)) {
-            filterChain.doFilter(request, response);
-            return;
+        if (StrUtil.isNotBlank(authorization)) {
+            try {
+                if (JWTUtil.verify(authorization, jWTProp.getKey())) {
+                    String key = StrUtil.format("token:{}", authorization);
+                    if (redisClient.has(key)) {
+                        String detailJson = redisClient.get(key);
+                        if (StrUtil.isNotBlank(detailJson)) {
+                            SecurityDetails details = JSONUtil.toBean(detailJson, SecurityDetails.class);
+                            if (Objects.nonNull(details)) {
+                                UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
+                                SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+                            }
+                        }
+                    }
+                } else {
+                    ServletUtil.write(response, Result.err("登录信息校验失败!", null));
+                }
+            } catch (Exception e) {
+                ServletUtil.write(response, Result.err("登录信息校验失败!", null));
+                return;
+            }
         }
-        if(!JWTUtil.verify(authorization,jWTProp.getKey())){
-            ServletUtil.write(response, Result.err("登录信息校验失败!",null));
-            return;
-        }
-
-        String key = StrUtil.format("token:{}", authorization);
-        if (!redisClient.has(key)) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-        String detailJson = redisClient.get(key);
-        if (StrUtil.isBlank(detailJson)) {
-            filterChain.doFilter(request,response);
-            return;
-        }
-
-        SecurityDetails details = JSONUtil.toBean(detailJson, SecurityDetails.class);
-        if (Objects.nonNull(details)) {
-            UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(details, null, details.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-        }
-
-        filterChain.doFilter(request, response);
+        filterChain.doFilter(request,response);
     }
 }

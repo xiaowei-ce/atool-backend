@@ -13,6 +13,7 @@ public class ServletUtil {
 
     public static void write(HttpServletResponse response, String str){
         try {
+//            response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("application/json; charset=UTF-8");
             PrintWriter writer = response.getWriter();
             writer.write(str);

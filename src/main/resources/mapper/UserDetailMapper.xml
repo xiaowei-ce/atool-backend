@@ -3,36 +3,49 @@
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="org.example.atool.mapper.UserDetailMapper">
-    <insert id="add" parameterType="org.example.atool.entity.po.UserDetail">
+
+    <insert id="add">
         insert into user_detail (
         user_id
         <trim prefixOverrides=",">
-        <if test="detail.username != null">, username</if>
-        <if test="detail.avatar != null">, avatar</if>
-        <if test="detail.points != null">,points</if>
+            <if test="detail.username != null and detail.username != ''">, username</if>
+            <if test="detail.avatar != null and detail.avatar != ''">, avatar</if>
+            <if test="detail.points != null">,points</if>
+            <if test="detail.count != null">,count</if>
         </trim>
         )
         values (
         #{detail.userId}
         <trim prefixOverrides=",">
-        <if test="detail.username != null">, #{detail.username}</if>
-        <if test="detail.avatar != null">, #{detail.avatar}</if>
-        <if test="detail.avatar != null">, #{detail.points}</if>
+            <if test="detail.username != null and detail.username != ''">, #{detail.username}</if>
+            <if test="detail.avatar != null and detail.avatar != ''">, #{detail.avatar}</if>
+            <if test="detail.points != null">, #{detail.points}</if>
+            <if test="detail.count != null">,#{detail.count}</if>
         </trim>
         );
     </insert>
 
     <select id="getByUserId" resultType="org.example.atool.entity.po.UserDetail">
-        select * from user_detail where user_id = #{userId};
+        select *
+        from user_detail
+        where user_id = #{userId};
     </select>
 
-    <update id="deductPoint">
-        update user_detail set points = ifnull(points,200)- #{deduct} where user_id = #{userId};
+    <update id="update">
+        update user_detail
+        <set>
+            <if test="detail.username != null and detail.username != ''">username = #{detail.username}</if>
+            <if test="detail.avatar != null and detail.avatar != ''">, avatar = #{detail.avatar}</if>
+            <if test="detail.points != null">, points = #{detail.points}</if>
+            <if test="detail.count != null">, count = #{detail.count}</if>
+        </set>
+        where user_id = #{detail.userId};
     </update>
 
-
-    <update id="updatePoint">
-        update user_detail set points = #{point} where user_id = #{userId};
+    <update id="changePoints">
+        update user_detail
+        set points = points + #{change}
+        where user_id = #{userId};
     </update>
 
 </mapper>

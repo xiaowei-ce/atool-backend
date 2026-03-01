@@ -10,9 +10,9 @@ import lombok.ToString;
 @Data
 @ToString
 public class UserDetail {
-
   private Long userId;
   private String username;
   private String avatar;
   private Long points;
+  private Long count;
 }
