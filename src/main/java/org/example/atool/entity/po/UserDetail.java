@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
+import java.sql.Date;
+
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
@@ -15,4 +17,5 @@ public class UserDetail {
   private String avatar;
   private Long points;
   private Long count;
+  private Date latestLottery;
 }

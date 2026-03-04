@@ -38,6 +38,7 @@
             <if test="detail.avatar != null and detail.avatar != ''">, avatar = #{detail.avatar}</if>
             <if test="detail.points != null">, points = #{detail.points}</if>
             <if test="detail.count != null">, count = #{detail.count}</if>
+            <if test="detail.latestLottery != null">, latest_lottery = #{detail.latestLottery}</if>
         </set>
         where user_id = #{detail.userId};
     </update>

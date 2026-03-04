@@ -17,4 +17,6 @@ public interface UserService {
     List<RecordVO> pageGetRecords(Integer page, Integer size);
 
     void exchange(String key);
+
+    Long lottery();
 }

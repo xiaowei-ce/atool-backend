@@ -1,10 +1,7 @@
 package org.example.atool.configs;
 
 import lombok.RequiredArgsConstructor;
-import org.example.atool.components.CustomLogoutSuccessHandler;
-import org.example.atool.components.JWTFilter;
-import org.example.atool.components.UnAccessDeniedHandler;
-import org.example.atool.components.UnAuthenticationEntryPoint;
+import org.example.atool.components.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -33,6 +30,7 @@ public class SecurityConf {
     private final CustomLogoutSuccessHandler customLogoutSuccessHandler;
     private final UnAccessDeniedHandler unAccessDeniedHandler;
     private final CorsConfigurationSource corsConfigurationSource;
+    private final MyAuthenticationFailureHandler myAuthenticationFailureHandler;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -101,6 +99,13 @@ public class SecurityConf {
                     }
                 })
 
+
+                .formLogin(new Customizer<FormLoginConfigurer<HttpSecurity>>() {
+                    @Override
+                    public void customize(FormLoginConfigurer<HttpSecurity> configurer) {
+                        configurer.failureHandler(myAuthenticationFailureHandler);
+                    }
+                })
 
                 .logout(new Customizer<LogoutConfigurer<HttpSecurity>>() {
                     @Override

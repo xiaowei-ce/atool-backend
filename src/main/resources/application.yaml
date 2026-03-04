@@ -57,3 +57,7 @@ atool:
     key: e372d98n3weriuiwetryueitbryuestyve487btv43e
     expire: 604800
     unit: seconds
+
+  lottery:
+    min: 5
+    max: 15

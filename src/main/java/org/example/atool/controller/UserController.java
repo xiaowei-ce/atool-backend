@@ -1,5 +1,6 @@
 package org.example.atool.controller;
 
+import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.example.atool.entity.Result;
 import org.example.atool.entity.dto.LoginDTO;
@@ -38,15 +39,20 @@ public class UserController {
 
     @GetMapping("/records")
     public Result records(){
-        List<RecordVO> records = userService.pageGetRecords(0,35);
+        List<RecordVO> records = userService.pageGetRecords(0,90);
         return Result.ok("success",records);
     }
 
     @GetMapping("/exchange")
     public Result exchange_key(@RequestParam("key") String key){
-        System.out.println(key);
         userService.exchange(key);
         return Result.ok("兑换成功",null);
+    }
+
+    @PostMapping("/lottery")
+    public Result lottery(){
+        Long point = userService.lottery();
+        return Result.ok(StrUtil.format("签到成功，获得了{}积分",point),null);
     }
 
 }

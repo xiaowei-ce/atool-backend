@@ -2,6 +2,7 @@ package org.example.atool.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
+import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWTUtil;
@@ -17,6 +18,7 @@ import org.example.atool.entity.vo.RecordVO;
 import org.example.atool.entity.vo.UserDetailVO;
 import org.example.atool.mapper.*;
 import org.example.atool.props.JWTProp;
+import org.example.atool.props.LotteryProp;
 import org.example.atool.props.RegexProp;
 import org.example.atool.service.CaptchaService;
 import org.example.atool.service.UserService;
@@ -29,7 +31,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.Serial;
+import java.sql.Date;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +54,7 @@ public class UserServiceImpl implements UserService {
     private final JWTProp jWTProp;
     private final RecordMapper recordMapper;
     private final PointKeysMapper pointKeysMapper;
+    private final LotteryProp lotteryProp;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
@@ -173,6 +178,34 @@ public class UserServiceImpl implements UserService {
         record.setTypeId(2L);
         record.setUserId(userId);
         recordMapper.add(record);
+    }
+
+    @Override
+    @Transactional(rollbackFor = {Exception.class, Error.class})
+    public Long lottery() {
+        Long userId = PrincipalUtil.user().getId();
+
+        UserDetail userDetail = userDetailMapper.getByUserId(userId);
+        LocalDate latestLottery = userDetail.getLatestLottery().toLocalDate();
+        if (latestLottery.equals(LocalDate.now())) {
+            Throw.BizExp("今天已经签到过了");
+        }
+        Long point = (long) RandomUtil.randomInt(lotteryProp.getMin(), lotteryProp.getMax());
+
+        userDetail.setLatestLottery(Date.valueOf(LocalDate.now()));
+        userDetail.setPoints(details().getPoints() + point );
+        userDetailMapper.update(userDetail);
+
+        Record record = new Record();
+        record.setAbstr("每日签到");
+        record.setChange(point);
+        record.setTime(Timestamp.valueOf(LocalDateTime.now()));
+        record.setDetail(StrUtil.format("获得了{}积分",point));
+        record.setTypeId(3L);
+        record.setUserId(userId);
+        recordMapper.add(record);
+
+        return point;
     }
 
 }
