@@ -122,7 +122,6 @@ public class UserServiceImpl implements UserService {
         HashMap<String, Object> payload = new HashMap<>() {
             @Serial
             private static final long serialVersionUID = 1L;
-
             {
                 put("loginDTO", loginDTO);
             }
@@ -188,7 +187,7 @@ public class UserServiceImpl implements UserService {
         UserDetail userDetail = userDetailMapper.getByUserId(userId);
         LocalDate latestLottery = userDetail.getLatestLottery().toLocalDate();
         if (latestLottery.equals(LocalDate.now())) {
-            Throw.BizExp("今天已经签到过了");
+            Throw.CodeExp(300,"今天已经签到过了");
         }
         Long point = (long) RandomUtil.randomInt(lotteryProp.getMin(), lotteryProp.getMax());
 

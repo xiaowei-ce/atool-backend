@@ -32,7 +32,7 @@ public class SkyController {
     }
 
     @GetMapping("/gift")
-    public Result gift(@RequestParam("id") String id){
+    public Result gift(@RequestParam(value = "id", required = false) String id){
         if (StrUtil.isBlank(id)){
             Throw.BizExp("光遇ID不能为空");
         }

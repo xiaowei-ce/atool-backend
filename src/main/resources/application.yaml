@@ -3,14 +3,15 @@ spring:
     name: ATool
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://192.168.5.3:3306/atool
+    url: jdbc:mysql://192.168.5.2:3306/atool
     username: root
     password: 123
   data:
     redis:
       database: 0
-      host: 192.168.5.3
+      host: 192.168.5.2
       port: 6379
+      password: wei5877261
   mail:
     host: smtp.qq.com
     username: 3684779724@qq.com

@@ -2,6 +2,7 @@ package org.example.atool.service.impl;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
+import com.dtflys.forest.http.ForestResponse;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import org.example.atool.HttpClient.SkyApiClient;
@@ -27,7 +28,6 @@ public class SkyServiceImpl implements SkyService {
     private final UserDetailMapper userDetailMapper;
     private final RecordMapper recordMapper;
 
-
     @Resource
     private SkyApiClient skyApiClient;
 
@@ -38,24 +38,27 @@ public class SkyServiceImpl implements SkyService {
         Long userId = PrincipalUtil.user().getId();
         UserDetail detail = userDetailMapper.getByUserId(userId);
         Long points = detail.getPoints();
-        if(points < 50){
+        if (points < 50) {
             Throw.BizExp("积分不足!");
         }
 
-        String dataStr = skyApiClient.data(id);
-
-        //这里是api供应商太傻逼了，正常数据用text报错用json....
-        if (JSONUtil.isTypeJSON(dataStr)) {
-            JSONObject object = JSONUtil.parseObj(dataStr);
-            if(object.getInt("code") != 200) {
-                String msg = object.getStr("msg");
-                Throw.BizExp(msg);
+        //这里是api供应商太傻逼了，正常数据用text报错json和text混用....
+        ForestResponse<String> dataResponse = skyApiClient.data(id);
+        String responseContent = dataResponse.getContent();
+        
+        if (StrUtil.isBlank(responseContent)){
+            Throw.BizExp("查询到了空白数据");
+        }
+        if (dataResponse.getContentType().isJson()){
+            JSONObject parsed = JSONUtil.parseObj(responseContent);
+            if (parsed.containsKey("msg")){
+                Throw.BizExp(parsed.getStr("msg"));
             }else {
-                Throw.BizExp("api出错，请联系管理员");
+                Throw.BizExp(parsed.toString());
             }
         }
 
-        double similar = StrUtil.similar(dataStr, """
+        double similar = StrUtil.similar(responseContent, """
                 身高解析结果：
                 体型值: -0.04459
                 身高值: -1.94260
@@ -75,8 +78,8 @@ public class SkyServiceImpl implements SkyService {
                 裤子: 武士裤
                 查询耗时: 1.65687 s
                 查询时间：15时35分25秒""");
-        if(similar > 0.5D && StrUtil.containsAll(dataStr,"身高解析结果","当前角色服装","查询耗时","查询时间","身高值","当前身高")){
-            dataStr = StrUtil.replace(dataStr, "：", ":");
+        if (similar > 0.5D && StrUtil.containsAll(responseContent, "身高解析结果", "当前角色服装", "查询耗时", "查询时间", "身高值", "当前身高")) {
+            responseContent = StrUtil.replace(responseContent, "：", ":");
             Long cast = 50L;
             detail.setPoints(detail.getPoints() - cast);
             detail.setCount(detail.getCount() + 1);
@@ -87,19 +90,34 @@ public class SkyServiceImpl implements SkyService {
             record.setTypeId(1L);
             record.setTime(Timestamp.valueOf(LocalDateTime.now()));
             record.setAbstr("查询身高");
-            record.setDetail(dataStr);
+            record.setDetail(responseContent);
             record.setChange(-cast);
             recordMapper.add(record);
-        }else{
-            Throw.BizExp(dataStr);
+        } else {
+            Throw.BizExp(responseContent);
         }
-        return dataStr;
+        return responseContent;
     }
 
     @Override
     public SkyGiftVO gift(String id) {
+        ForestResponse<String> giftResponse = skyApiClient.gift(id);
+        String responseContent = giftResponse.getContent();
+        if (StrUtil.isBlank(responseContent)){
+            Throw.BizExp("查询到了空白数据");
+        }
+        if (!giftResponse.getContentType().isJson()) {
+            Throw.BizExp(responseContent);
+        }
+        JSONObject parsed = JSONUtil.parseObj(responseContent);
+        if (!parsed.containsKey("totalCount")) {
+            if (parsed.containsKey("error")){
+                Throw.BizExp(parsed.getStr("error"));
+            }else {
+                Throw.BizExp(parsed.toString());
+            }
+        }
 
-        String gift = skyApiClient.gift(id);
-        return null;//todo ....
+        return JSONUtil.toBean(parsed, SkyGiftVO.class);
     }
 }

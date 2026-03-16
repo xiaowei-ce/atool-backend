@@ -1,6 +1,7 @@
 package org.example.atool.utils;
 
 import org.example.atool.Exp.BizException;
+import org.example.atool.Exp.CodeException;
 
 public class Throw {
 
@@ -10,6 +11,10 @@ public class Throw {
 
     public static void RTExp(String msg){
         throw new RuntimeException(msg);
+    }
+
+    public static void CodeExp(Integer code, String msg){
+        throw new CodeException(code, msg);
     }
 
 }

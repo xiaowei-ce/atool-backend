@@ -3,6 +3,7 @@ package org.example.atool.configs;
 import cn.hutool.core.util.StrUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.example.atool.Exp.BizException;
+import org.example.atool.Exp.CodeException;
 import org.example.atool.entity.Result;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -26,6 +27,12 @@ public class ExpHandler {
         return Result.err(exp.getMessage(), null);
     }
 
+    @ExceptionHandler(CodeException.class)
+    public Result CodeExp(CodeException exp){
+        log.error("{}{}","CodeExp ", mkMsg(exp));
+        return Result.custom(exp.getCode(), exp.getMessage(), null);
+    }
+
     @ExceptionHandler(Exception.class)
     public Result Exp(Exception exp){
         log.error("{}{}","Exp ",mkMsg(exp));
@@ -37,7 +44,6 @@ public class ExpHandler {
                 .map(StackTraceElement::toString)
                 .filter(it -> StrUtil.containsAll(it, "org.example.atool",".java"))
                 .toList();
-
         StringBuilder stringBuilder = new StringBuilder(exp.getMessage()).append("\n");
         stackTraces.forEach((element)->{
             stringBuilder.append(element);

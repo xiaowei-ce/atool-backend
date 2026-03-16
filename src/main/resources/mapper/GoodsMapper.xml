@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.atool.mapper.GoodsMapper">
+    <select id="onSaleGoods" parameterType="Boolean" resultType="org.example.atool.entity.po.Goods">
+        select *
+        from goods
+        where for_sale = #{forSale};
+    </select>
+
+    <select id="onSaleGoodsByIds" resultType="org.example.atool.entity.po.Goods">
+        select *
+        from goods
+        <where>
+            for_sale = true
+            <if test="ids != null and ids.size() > 0">and id in
+                <foreach collection="ids" item="id" separator="," open="(" close=")">#{id}</foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="totalPrice" resultType="java.math.BigDecimal">
+        <choose>
+            <when test="counts != null and counts.size() > 0">
+                select sum(goods.price*counts.count) from goods
+                join
+                (<foreach collection="counts" separator="UNION ALL" item="it">
+                select #{it.id} as id, #{it.count} as count
+            </foreach>) as counts on goods.id = counts.id;
+            </when>
+            <otherwise>select 0</otherwise>
+        </choose>
+    </select>
+
+</mapper>
