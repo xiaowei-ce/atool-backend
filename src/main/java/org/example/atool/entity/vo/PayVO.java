@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 public class PayVO {
     private String money;
     private String name;
-    private String notifyUrl;
-    private String outTradeNo;
+    private String notify_url;
+    private String out_trade_no;
     private String pid;
-    private String returnUrl;
+    private String return_url;
     private String sign;
-    private String signType;
+    private String sign_type;
 }

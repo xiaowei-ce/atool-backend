@@ -16,4 +16,5 @@ public class Goods {
     private String name;
     private BigDecimal price;
     private Boolean forSale;
+    private Long point;
 }

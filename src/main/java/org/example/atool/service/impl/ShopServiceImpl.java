@@ -7,24 +7,37 @@ import lombok.RequiredArgsConstructor;
 import org.example.atool.entity.dto.GoodsCountDTO;
 import org.example.atool.entity.po.Goods;
 import org.example.atool.entity.po.Order;
+import org.example.atool.entity.po.OrderGoods;
 import org.example.atool.entity.po.User;
-import org.example.atool.entity.vo.OrderGoods;
+import org.example.atool.entity.vo.OrderGoodsVO;
 import org.example.atool.entity.vo.OrderVO;
+import org.example.atool.entity.vo.PayVO;
 import org.example.atool.mapper.GoodsMapper;
+import org.example.atool.mapper.OrderGoodsMapper;
+import org.example.atool.mapper.OrderMapper;
+import org.example.atool.props.EPayProp;
 import org.example.atool.service.ShopService;
 import org.example.atool.utils.PrincipalUtil;
+import org.example.atool.utils.SignUtil;
+import org.example.atool.utils.Throw;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class ShopServiceImpl implements ShopService {
     private final GoodsMapper goodsMapper;
+    private final OrderMapper orderMapper;
+    private final OrderGoodsMapper orderGoodsMapper;
+    private final EPayProp ePayProp;
 
     @Override
     public List<Goods> goods() {
@@ -32,8 +45,14 @@ public class ShopServiceImpl implements ShopService {
     }
 
     @Override
+    @Transactional(rollbackFor = {Error.class, Exception.class})
     public OrderVO order(List<GoodsCountDTO> counts) {
+
         User user = PrincipalUtil.user();
+        Order pendingOrder = orderMapper.statusOrder(user.getId(), Order.PENDING);
+        if (Objects.nonNull(pendingOrder)){
+            Throw.BizExp("有未支付订单，请先取消或完成支付再下单");
+        }
         String nowStr = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
         String sha256Hex = DigestUtil.sha256Hex(user.getAccount());
         String sub = StrUtil.sub(sha256Hex, sha256Hex.length() - 8, sha256Hex.length());
@@ -46,14 +65,47 @@ public class ShopServiceImpl implements ShopService {
         order.setCreateBy(user.getId());
         order.setAmount(goodsMapper.totalPrice(counts));
 
+        orderMapper.add(order);
+
+
+        List<OrderGoods> orderGoodsList = counts.stream().map(count -> {
+            OrderGoods orderGoods = new OrderGoods();
+            orderGoods.setOrderId(orderId);
+            orderGoods.setGoodsId(count.getId());
+            orderGoods.setGoodsCount(count.getCount());
+            return orderGoods;
+        }).toList();
+        orderGoodsMapper.add(orderGoodsList);
+
         OrderVO vo = new OrderVO();
         BeanUtil.copyProperties(order, vo);
         List<Long> ids = counts.stream().map(GoodsCountDTO::getId).toList();
         List<Goods> goods = goodsMapper.onSaleGoodsByIds(ids);
         Map<Long, Integer> countsMap = counts.stream().collect(Collectors.toMap(GoodsCountDTO::getId, GoodsCountDTO::getCount));
-        List<OrderGoods> orderGoods = goods.stream().map(it -> new OrderGoods(it, countsMap.get(it.getId()))).toList();
+        List<OrderGoodsVO> orderGoods = goods.stream().map(it -> new OrderGoodsVO(it, countsMap.get(it.getId()))).toList();
         vo.setOrderGoods(orderGoods);
 
+        return vo;
+    }
+
+    @Override
+    public PayVO pay(String orderId) {
+        Order order = orderMapper.orderById(orderId);
+        if (Objects.isNull(order)){
+            Throw.BizExp("订单号不存在");
+        }
+        if (!Objects.equals(order.getStatus(), Order.PENDING)){
+            Throw.BizExp("订单状态不一致");
+        }
+        PayVO vo = new PayVO();
+        vo.setMoney(order.getAmount().setScale(2, RoundingMode.HALF_DOWN).toString());
+        vo.setName(order.getName());
+        vo.setOut_trade_no(order.getId());
+        vo.setPid(ePayProp.getPid());
+        vo.setReturn_url(ePayProp.getReturn_url());
+        vo.setNotify_url(ePayProp.getNotify_url());
+        vo.setSign_type("MD5");
+        vo.setSign(SignUtil.md5Sign(vo,ePayProp.getKey()));
         return vo;
     }
 }

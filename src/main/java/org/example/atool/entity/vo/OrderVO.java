@@ -13,6 +13,6 @@ public class OrderVO {
     private String name;
     private BigDecimal amount;
     private Integer status;
-    private List<OrderGoods> orderGoods;
+    private List<OrderGoodsVO> orderGoods;
 }
 

@@ -10,6 +10,9 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @ToString
 public class Record {
+
+    public final static Long BONUS = 3L, QUERY = 1L, RECHARGE = 2L;
+
     private Long id;
     private Long userId;
     private Long typeId;

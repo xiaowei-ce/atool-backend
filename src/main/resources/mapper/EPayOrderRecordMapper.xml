@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.example.atool.mapper.EPayOrderRecordMapper">
+
+    <insert id="addRecord">
+        insert into epay_order_record (epay_no, order_id, pay_type,epay_status)
+        values ( #{ePayOrderRecord.epayNo}, #{ePayOrderRecord.orderId}, #{ePayOrderRecord.payType}, #{ePayOrderRecord.epayStatus});
+    </insert>
+</mapper>

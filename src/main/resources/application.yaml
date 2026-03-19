@@ -5,13 +5,14 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.5.2:3306/atool
     username: root
-    password: 123
+    password: wei5877261
   data:
     redis:
       database: 0
       host: 192.168.5.2
       port: 6379
       password: wei5877261
+      timeout: 1800
   mail:
     host: smtp.qq.com
     username: 3684779724@qq.com
@@ -62,3 +63,8 @@ atool:
   lottery:
     min: 5
     max: 15
+  epay:
+    key: U51Sy51Pi5XuSSorU159FSS71sOURVsR
+    return-url: http://
+    notify-url: http://
+    pid: 1010

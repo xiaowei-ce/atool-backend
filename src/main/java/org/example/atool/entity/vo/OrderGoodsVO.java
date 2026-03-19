@@ -8,7 +8,7 @@ import org.example.atool.entity.po.Goods;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderGoods {
+public class OrderGoodsVO {
     private Goods goods;
     private Integer count;
 }
