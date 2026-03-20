@@ -62,7 +62,7 @@ public class PayNotifyServiceImpl implements PayNotifyService {
         record.setChange(totalPoints);
         record.setTime(Timestamp.valueOf(LocalDateTime.now()));
         record.setAbstr("购买积分");
-        record.setDetail(StrUtil.format("订单号: {}\n金额: {}\n积分: {}",order.getId(), order.getAmount(),totalPoints));
+        record.setDetail(StrUtil.format("订单号: {}\n金额: {}RMB\n积分: {}",order.getId(), order.getAmount(),totalPoints));
         recordMapper.add(record);
     }
 }

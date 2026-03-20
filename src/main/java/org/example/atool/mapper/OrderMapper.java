@@ -3,6 +3,10 @@ package org.example.atool.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.example.atool.entity.po.Order;
+import org.example.atool.entity.vo.OrderVO;
+import org.example.atool.entity.vo.OrdersGoodsInfoVO;
+
+import java.util.List;
 
 @Mapper
 public interface OrderMapper {
@@ -15,4 +19,8 @@ public interface OrderMapper {
     void markStatus(@Param("orderId") String orderId, @Param("status") Integer status);
 
     Long totalPoints(@Param("orderId") String orderId);
+
+    List<OrderVO> pageOrders(@Param("userId") Long userId, @Param("size") Integer size);
+
+    List<OrdersGoodsInfoVO> goodsInfos(String orderId);
 }

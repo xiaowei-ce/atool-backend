@@ -1,6 +1,5 @@
 package org.example.atool.components;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.example.atool.entity.Result;
@@ -18,7 +17,7 @@ public class MyAuthenticationFailureHandler implements AuthenticationFailureHand
     @Override
     public void onAuthenticationFailure(HttpServletRequest request,
                                         HttpServletResponse response, AuthenticationException exception)
-            throws IOException, ServletException {
+            throws IOException {
 
 
         response.setStatus(HttpStatus.FORBIDDEN.value());

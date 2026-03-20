@@ -4,7 +4,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.util.List;
+import java.sql.Timestamp;
 
 @NoArgsConstructor
 @Data
@@ -13,6 +13,6 @@ public class OrderVO {
     private String name;
     private BigDecimal amount;
     private Integer status;
-    private List<OrderGoodsVO> orderGoods;
+    private Timestamp createTime;
 }
 

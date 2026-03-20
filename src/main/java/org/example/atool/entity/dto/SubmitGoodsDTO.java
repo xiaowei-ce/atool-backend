@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class GoodsCountDTO {
+public class SubmitGoodsDTO {
     private Long id;
     private Integer count;
 }

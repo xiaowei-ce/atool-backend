@@ -3,12 +3,16 @@ package org.example.atool.entity.vo;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.atool.entity.po.Goods;
+
+import java.math.BigDecimal;
 
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class OrderGoodsVO {
-    private Goods goods;
+public class OrdersGoodsInfoVO {
     private Integer count;
+    private Long id;
+    private String name;
+    private BigDecimal price;
+    private Boolean forSale;
 }

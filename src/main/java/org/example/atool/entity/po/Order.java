@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,4 +19,5 @@ public class Order {
   private String name;
   private Long createBy;
   private Integer status;
+  private Timestamp createTime;
 }

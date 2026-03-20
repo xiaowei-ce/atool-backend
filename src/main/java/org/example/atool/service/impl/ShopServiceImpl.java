@@ -4,12 +4,12 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.digest.DigestUtil;
 import lombok.RequiredArgsConstructor;
-import org.example.atool.entity.dto.GoodsCountDTO;
+import org.example.atool.entity.dto.SubmitGoodsDTO;
 import org.example.atool.entity.po.Goods;
 import org.example.atool.entity.po.Order;
 import org.example.atool.entity.po.OrderGoods;
 import org.example.atool.entity.po.User;
-import org.example.atool.entity.vo.OrderGoodsVO;
+import org.example.atool.entity.vo.OrdersGoodsInfoVO;
 import org.example.atool.entity.vo.OrderVO;
 import org.example.atool.entity.vo.PayVO;
 import org.example.atool.mapper.GoodsMapper;
@@ -24,12 +24,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.RoundingMode;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -46,7 +45,7 @@ public class ShopServiceImpl implements ShopService {
 
     @Override
     @Transactional(rollbackFor = {Error.class, Exception.class})
-    public OrderVO order(List<GoodsCountDTO> counts) {
+    public OrderVO order(List<SubmitGoodsDTO> counts) {
 
         User user = PrincipalUtil.user();
         Order pendingOrder = orderMapper.statusOrder(user.getId(), Order.PENDING);
@@ -63,10 +62,9 @@ public class ShopServiceImpl implements ShopService {
         order.setName("积分订单");
         order.setStatus(Order.PENDING);
         order.setCreateBy(user.getId());
+        order.setCreateTime(Timestamp.valueOf(LocalDateTime.now()));
         order.setAmount(goodsMapper.totalPrice(counts));
-
         orderMapper.add(order);
-
 
         List<OrderGoods> orderGoodsList = counts.stream().map(count -> {
             OrderGoods orderGoods = new OrderGoods();
@@ -76,15 +74,8 @@ public class ShopServiceImpl implements ShopService {
             return orderGoods;
         }).toList();
         orderGoodsMapper.add(orderGoodsList);
-
         OrderVO vo = new OrderVO();
         BeanUtil.copyProperties(order, vo);
-        List<Long> ids = counts.stream().map(GoodsCountDTO::getId).toList();
-        List<Goods> goods = goodsMapper.onSaleGoodsByIds(ids);
-        Map<Long, Integer> countsMap = counts.stream().collect(Collectors.toMap(GoodsCountDTO::getId, GoodsCountDTO::getCount));
-        List<OrderGoodsVO> orderGoods = goods.stream().map(it -> new OrderGoodsVO(it, countsMap.get(it.getId()))).toList();
-        vo.setOrderGoods(orderGoods);
-
         return vo;
     }
 
@@ -107,5 +98,21 @@ public class ShopServiceImpl implements ShopService {
         vo.setSign_type("MD5");
         vo.setSign(SignUtil.md5Sign(vo,ePayProp.getKey()));
         return vo;
+    }
+
+    @Override
+    public List<OrderVO> orders(Integer size) {
+        User user = PrincipalUtil.user();
+        return orderMapper.pageOrders(user.getId(), size);
+    }
+
+    @Override
+    public List<OrdersGoodsInfoVO> orderGoods(String orderId) {
+        return orderMapper.goodsInfos(orderId);
+    }
+
+    @Override
+    public void markCanceled(String orderId) {
+        orderMapper.markStatus(orderId,Order.CANCELED);
     }
 }

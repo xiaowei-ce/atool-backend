@@ -7,7 +7,10 @@ import org.example.atool.entity.dto.LoginDTO;
 import org.example.atool.entity.dto.RegisterDTO;
 import org.example.atool.entity.vo.RecordVO;
 import org.example.atool.entity.vo.UserDetailVO;
+import org.example.atool.props.RegexProp;
 import org.example.atool.service.UserService;
+import org.example.atool.utils.RegexUtil;
+import org.example.atool.utils.Throw;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -18,9 +21,16 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final RegexProp regexProp;
 
     @PutMapping("/register")
     public Result register(@RequestParam("type") String type, @RequestBody RegisterDTO registerDTO) {
+        if (!RegexUtil.isMatch(regexProp.get("password"), registerDTO.getPassword())) {
+            Throw.BizExp("密码格式错误");
+        }
+        if (!RegexUtil.isMatch(regexProp.get(type), registerDTO.getAccount())) {
+            Throw.BizExp("账号格式错误");
+        }
         userService.register(type, registerDTO);
         return Result.ok("注册成功", null);
     }
@@ -38,8 +48,12 @@ public class UserController {
     }
 
     @GetMapping("/records")
-    public Result records(){
-        List<RecordVO> records = userService.pageGetRecords(0,90);
+    public Result records(@RequestParam(value = "pageSize",required = false,defaultValue = "90")Integer pageSize){
+        if (pageSize > 150) {
+            Throw.BizExp("每页大小不超过150");
+        }
+        //暂时不用前端参数
+        List<RecordVO> records = userService.pageGetRecords(0,pageSize);
         return Result.ok("success",records);
     }
 

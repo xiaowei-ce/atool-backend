@@ -63,13 +63,6 @@ public class UserServiceImpl implements UserService {
         if (Objects.nonNull(userMapper.getByAccount(registerDTO.getAccount()))) {
             Throw.BizExp("该帐号已被注册！");
         }
-
-        if (!RegexUtil.isMatch(regexProp.get("password"), registerDTO.getPassword())) {
-            Throw.BizExp("密码格式错误");
-        }
-        if (!RegexUtil.isMatch(regexProp.get(type), registerDTO.getAccount())) {
-            Throw.BizExp("账号格式错误");
-        }
         captchaService.verify(type, registerDTO.getAccount(), registerDTO.getCaptcha());
 
         User user = new User();
@@ -146,9 +139,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<RecordVO> pageGetRecords(Integer page, Integer size) {
-        if (page > 150) {
-            Throw.BizExp("每页大小不超过150");
-        }
         return recordMapper.pageGet(PrincipalUtil.user().getId(), page, size);
     }
 

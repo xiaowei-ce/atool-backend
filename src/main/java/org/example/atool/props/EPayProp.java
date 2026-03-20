@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "atool.epay")
 public class EPayProp {
     private String key;
-    private String pid;
+    private Integer pid;
     private String return_url;
     private String notify_url;
 }

@@ -10,7 +10,7 @@ public class PayVO {
     private String name;
     private String notify_url;
     private String out_trade_no;
-    private String pid;
+    private Integer pid;
     private String return_url;
     private String sign;
     private String sign_type;

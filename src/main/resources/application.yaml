@@ -1,3 +1,5 @@
+server:
+  port: 7490
 spring:
   application:
     name: ATool
@@ -65,6 +67,6 @@ atool:
     max: 15
   epay:
     key: U51Sy51Pi5XuSSorU159FSS71sOURVsR
-    return-url: http://
-    notify-url: http://
+    return-url: http://sky.with.us.in/pay/notify/href
+    notify-url: http://skyapi.with.us.in/pay/notify/call
     pid: 1010

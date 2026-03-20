@@ -5,8 +5,8 @@
 <mapper namespace="org.example.atool.mapper.OrderMapper">
 
     <insert id="add">
-        insert into `order` (id, amount, name, create_by, status)
-        values (#{order.id}, #{order.amount}, #{order.name}, #{order.createBy}, #{order.status});
+        insert into `order` (id, amount, name, create_by, status, create_time)
+        values (#{order.id}, #{order.amount}, #{order.name}, #{order.createBy}, #{order.status}, #{order.createTime});
     </insert>
 
     <select id="statusOrder" resultType="org.example.atool.entity.po.Order">
@@ -23,6 +23,16 @@
 
     <select id="totalPoints" resultType="java.lang.Long">
         select SUM(goods.point * order_goods.goods_count) as total_points from goods right join order_goods on order_goods.goods_id = goods.id
+        where order_goods.order_id = #{orderId};
+    </select>
+
+    <select id="pageOrders" resultType="org.example.atool.entity.vo.OrderVO">
+        select id, amount, name, status, create_time from `order` where create_by = #{userId} order by create_time desc limit #{size};
+    </select>
+
+    <select id="goodsInfos" resultType="org.example.atool.entity.vo.OrdersGoodsInfoVO">
+        select goods.id as id , goods.name as name ,goods.price as price , goods.for_sale as for_sale, goods.`point` as `point` , order_goods.goods_count as count
+        from goods join order_goods on goods.id = order_goods.goods_id
         where order_goods.order_id = #{orderId};
     </select>
 </mapper>
