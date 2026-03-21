@@ -63,10 +63,10 @@ atool:
     unit: seconds
 
   lottery:
-    min: 5
-    max: 15
+    min: 25
+    max: 65
   epay:
     key: U51Sy51Pi5XuSSorU159FSS71sOURVsR
-    return-url: http://sky.with.us.in/pay/notify/href
+    return-url: http://sky.with.us.in/payment/notify
     notify-url: http://skyapi.with.us.in/pay/notify/call
     pid: 1010

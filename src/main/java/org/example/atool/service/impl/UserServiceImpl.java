@@ -2,7 +2,6 @@ package org.example.atool.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.json.JSONObject;
 import cn.hutool.jwt.JWTUtil;
@@ -38,6 +37,7 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Service
 @RequiredArgsConstructor
@@ -80,9 +80,8 @@ public class UserServiceImpl implements UserService {
         record.setAbstr("新用户注册");
         record.setDetail("新用户注册赠送100积分");
         record.setChange(+100L);
-        record.setTypeId(3L);
+        record.setTypeId(Record.BONUS);
         recordMapper.add(record);
-
 
         UserDetail detail = new UserDetail();
         detail.setUserId(user.getId());
@@ -161,10 +160,10 @@ public class UserServiceImpl implements UserService {
 
         Record record = new Record();
         record.setAbstr("卡密兑换");
-        record.setChange(pointKeys.getPoints());
+        record.setChange(+pointKeys.getPoints());
         record.setTime(Timestamp.valueOf(LocalDateTime.now()));
         record.setDetail(StrUtil.format("使用卡密{}兑换了{}积分",key,pointKeys.getPoints()));
-        record.setTypeId(2L);
+        record.setTypeId(Record.RECHARGE);
         record.setUserId(userId);
         recordMapper.add(record);
     }
@@ -179,18 +178,18 @@ public class UserServiceImpl implements UserService {
         if (latestLottery.equals(LocalDate.now())) {
             Throw.CodeExp(300,"今天已经签到过了");
         }
-        Long point = (long) RandomUtil.randomInt(lotteryProp.getMin(), lotteryProp.getMax());
 
+        Long point = ThreadLocalRandom.current().nextLong(lotteryProp.getMin(),lotteryProp.getMax());
         userDetail.setLatestLottery(Date.valueOf(LocalDate.now()));
         userDetail.setPoints(details().getPoints() + point );
         userDetailMapper.update(userDetail);
 
         Record record = new Record();
         record.setAbstr("每日签到");
-        record.setChange(point);
+        record.setChange(+point);
         record.setTime(Timestamp.valueOf(LocalDateTime.now()));
         record.setDetail(StrUtil.format("获得了{}积分",point));
-        record.setTypeId(3L);
+        record.setTypeId(Record.BONUS);
         record.setUserId(userId);
         recordMapper.add(record);
 

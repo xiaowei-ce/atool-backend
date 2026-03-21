@@ -1,5 +1,6 @@
 package org.example.atool.controller;
 
+import lombok.AllArgsConstructor;
 import org.example.atool.entity.Result;
 import org.example.atool.entity.po.Affiche;
 import org.example.atool.service.impl.CommonServiceImpl;
@@ -11,13 +12,10 @@ import java.util.List;
 
 @RequestMapping("/common")
 @RestController
+@AllArgsConstructor
 public class CommonController {
 
     private final CommonServiceImpl commonServiceImpl;
-
-    public CommonController(CommonServiceImpl commonServiceImpl) {
-        this.commonServiceImpl = commonServiceImpl;
-    }
 
     @GetMapping("/affiche")
     public Result affiche(){

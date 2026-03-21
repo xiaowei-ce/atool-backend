@@ -12,8 +12,10 @@ import org.example.atool.mapper.EPayOrderRecordMapper;
 import org.example.atool.mapper.OrderMapper;
 import org.example.atool.mapper.RecordMapper;
 import org.example.atool.mapper.UserDetailMapper;
+import org.example.atool.props.EPayProp;
 import org.example.atool.service.PayNotifyService;
 import org.example.atool.utils.PrincipalUtil;
+import org.example.atool.utils.SignUtil;
 import org.example.atool.utils.Throw;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -30,14 +32,27 @@ public class PayNotifyServiceImpl implements PayNotifyService {
     private final UserDetailMapper userDetailMapper;
     private final RecordMapper recordMapper;
     private final EPayOrderRecordMapper ePayOrderRecordMapper;
+    private final EPayProp ePayProp;
 
     @Override
     @Transactional(rollbackFor = {Error.class, Exception.class})
     public void payment(PayNotifyDTO dto) {
+        if (Objects.nonNull(dto)){
+            String md5Sign = SignUtil.md5Sign(dto, ePayProp.getKey());
+            if (!StrUtil.equals(md5Sign,dto.getSign())){
+                Throw.BizExp("签名校验失败！");
+            }
+            if (!StrUtil.equals(dto.getTrade_status(),"TRADE_SUCCESS")){
+                Throw.BizExp("支付未成功！");
+            }
+        }
 
         Order order = orderMapper.orderById(dto.getOut_trade_no());
         if (Objects.isNull(order)){
-            Throw.BizExp("订单号不存在");
+            Throw.BizExp("订单号不存在！");
+        }
+        if (Objects.equals(order.getStatus(),Order.PAYED)){
+            Throw.BizExp("该订单已支付！请勿重复！");
         }
         if (!Objects.equals(order.getStatus(),Order.PENDING)){
             Throw.BizExp("订单状态异常，请联系客服");
@@ -47,7 +62,6 @@ public class PayNotifyServiceImpl implements PayNotifyService {
         User user = PrincipalUtil.user();
         Long totalPoints = orderMapper.totalPoints(order.getId());
         userDetailMapper.changePoints(user.getId(),totalPoints);
-
 
         EPayOrderRecord ePayOrderRecord = new EPayOrderRecord();
         ePayOrderRecord.setPayType(dto.getType());

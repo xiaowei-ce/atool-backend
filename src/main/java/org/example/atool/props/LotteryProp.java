@@ -8,6 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "atool.lottery")
 public class LotteryProp {
-    int min = 5;
-    int max = 15;
+    long min = 25;
+    long max = 65;
 }
