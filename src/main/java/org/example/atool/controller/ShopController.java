@@ -37,8 +37,8 @@ public class ShopController {
         return Result.ok("success", vo);
     }
 
-    @GetMapping("/pay")
-    public Result pay(@RequestParam("orderId") String orderId){
+    @GetMapping("/pay/{orderId}")
+    public Result pay(@PathVariable String orderId){
         if (StrUtil.isBlank(orderId)){
             Throw.BizExp("订单号为空");
         }
@@ -46,8 +46,8 @@ public class ShopController {
         return Result.ok("success",vo);
     }
 
-    @GetMapping("/orderGoodsInfos")
-    public Result orderGoodsInfos(@RequestParam("orderId") String orderId){
+    @GetMapping("/orderGoodsInfos/{orderId}")
+    public Result orderGoodsInfos(@PathVariable String orderId){
         if (StrUtil.isBlank(orderId)){
             Throw.BizExp("订单号为空");
         }
@@ -61,8 +61,8 @@ public class ShopController {
         return Result.ok("success",orders);
     }
 
-    @PostMapping("/markCanceled/{orderId}")
-    public Result markOrderCanceled(@PathVariable("orderId") String orderId){
+    @PutMapping("/markCanceled/{orderId}")
+    public Result markOrderCanceled(@PathVariable String orderId){
         if (StrUtil.isBlank(orderId)){
             Throw.BizExp("订单号为空");
         }

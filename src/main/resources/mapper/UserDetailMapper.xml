@@ -12,6 +12,7 @@
             <if test="detail.avatar != null and detail.avatar != ''">, avatar</if>
             <if test="detail.points != null">,points</if>
             <if test="detail.count != null">,count</if>
+            <if test="detail.latestLottery != null">,latest_lottery</if>
         </trim>
         )
         values (
@@ -21,14 +22,13 @@
             <if test="detail.avatar != null and detail.avatar != ''">, #{detail.avatar}</if>
             <if test="detail.points != null">, #{detail.points}</if>
             <if test="detail.count != null">,#{detail.count}</if>
+            <if test="detail.latestLottery != null">,#{detail.latestLottery}</if>
         </trim>
         );
     </insert>
 
     <select id="getByUserId" resultType="org.example.atool.entity.po.UserDetail">
-        select *
-        from user_detail
-        where user_id = #{userId};
+        select * from user_detail where user_id = #{userId};
     </select>
 
     <update id="update">

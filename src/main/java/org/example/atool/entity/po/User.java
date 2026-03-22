@@ -12,10 +12,10 @@ import lombok.ToString;
 @ToString
 public class User {
 
+
   private Long id;
   private String account;
   private String password;
-
   private Boolean enable;
 
   @TableLogic(delval = "1", value = "0")

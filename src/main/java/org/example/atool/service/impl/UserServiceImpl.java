@@ -93,7 +93,6 @@ public class UserServiceImpl implements UserService {
 
         if (StrUtil.isNotBlank(authorization) && JWTUtil.verify(authorization, jWTProp.getKey())) {
             JSONObject object = (JSONObject) JWTUtil.parseToken(authorization).getPayload("loginDTO");
-
             LoginDTO dto = JSONUtil.toBean(object, LoginDTO.class);
 
             if (ObjectUtil.equals(loginDTO, dto)) {
@@ -176,7 +175,7 @@ public class UserServiceImpl implements UserService {
         UserDetail userDetail = userDetailMapper.getByUserId(userId);
         LocalDate latestLottery = userDetail.getLatestLottery().toLocalDate();
         if (latestLottery.equals(LocalDate.now())) {
-            Throw.CodeExp(300,"今天已经签到过了");
+            Throw.CodeExp(400,"今天已经签到过了");
         }
 
         Long point = ThreadLocalRandom.current().nextLong(lotteryProp.getMin(),lotteryProp.getMax());

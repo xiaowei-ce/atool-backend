@@ -54,7 +54,7 @@ public class UserController {
         }
         //暂时不用前端参数
         List<RecordVO> records = userService.pageGetRecords(0,pageSize);
-        return Result.ok("success",records);
+        return Result.ok("获取成功",records);
     }
 
     @GetMapping("/exchange")
