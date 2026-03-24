@@ -7,14 +7,12 @@ import org.example.atool.entity.dto.PayNotifyDTO;
 import org.example.atool.entity.po.EPayOrderRecord;
 import org.example.atool.entity.po.Order;
 import org.example.atool.entity.po.Record;
-import org.example.atool.entity.po.User;
 import org.example.atool.mapper.EPayOrderRecordMapper;
 import org.example.atool.mapper.OrderMapper;
 import org.example.atool.mapper.RecordMapper;
 import org.example.atool.mapper.UserDetailMapper;
 import org.example.atool.props.EPayProp;
 import org.example.atool.service.PayNotifyService;
-import org.example.atool.utils.PrincipalUtil;
 import org.example.atool.utils.SignUtil;
 import org.example.atool.utils.Throw;
 import org.springframework.stereotype.Service;
@@ -34,8 +32,8 @@ public class PayNotifyServiceImpl implements PayNotifyService {
     private final EPayOrderRecordMapper ePayOrderRecordMapper;
     private final EPayProp ePayProp;
 
-    @Override
     @Transactional(rollbackFor = {Error.class, Exception.class})
+    @Override
     public void payment(PayNotifyDTO dto) {
         if (Objects.nonNull(dto)){
             String md5Sign = SignUtil.md5Sign(dto, ePayProp.getKey());
@@ -52,16 +50,16 @@ public class PayNotifyServiceImpl implements PayNotifyService {
             Throw.BizExp("订单号不存在！");
         }
         if (Objects.equals(order.getStatus(),Order.PAYED)){
-            Throw.BizExp("该订单已支付！请勿重复！");
+//            Throw.BizExp("该订单已支付！");
+            return;
         }
         if (!Objects.equals(order.getStatus(),Order.PENDING)){
             Throw.BizExp("订单状态异常，请联系客服");
         }
         orderMapper.markStatus(order.getId(),Order.PAYED);
 
-        User user = PrincipalUtil.user();
         Long totalPoints = orderMapper.totalPoints(order.getId());
-        userDetailMapper.changePoints(user.getId(),totalPoints);
+        userDetailMapper.changePoints(order.getCreateBy(),totalPoints);
 
         EPayOrderRecord ePayOrderRecord = new EPayOrderRecord();
         ePayOrderRecord.setPayType(dto.getType());
@@ -71,7 +69,7 @@ public class PayNotifyServiceImpl implements PayNotifyService {
         ePayOrderRecordMapper.addRecord(ePayOrderRecord);
 
         Record record = new Record();
-        record.setUserId(user.getId());
+        record.setUserId(order.getCreateBy());
         record.setTypeId(Record.RECHARGE);
         record.setChange(totalPoints);
         record.setTime(Timestamp.valueOf(LocalDateTime.now()));

@@ -65,10 +65,10 @@ atool:
     unit: seconds
 
   lottery:
-    min: 25
-    max: 65
+    min: 20
+    max: 35
   epay:
     key: U51Sy51Pi5XuSSorU159FSS71sOURVsR
-    return-url: http://skt.with.us.in/payment/notify
+    return-url: http://sky.with.us.in/payment/notify
     notify-url: http://skyapi.with.us.in/pay/notify/call
     pid: 1010

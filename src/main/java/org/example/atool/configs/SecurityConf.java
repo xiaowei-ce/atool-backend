@@ -45,7 +45,7 @@ public class SecurityConf {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:5173/","http://sky.with.us.in"));
+        configuration.setAllowedOrigins(List.of("http://localhost:5173/","http://sky.with.us.in","http://skyapi.with.us.in"));
         configuration.setAllowedMethods(List.of("*"));
         configuration.setAllowedHeaders(List.of("*"));
         configuration.setMaxAge(3600L);
@@ -65,7 +65,8 @@ public class SecurityConf {
                                         "/user/login",
                                         "/user/register",
                                         "/captcha/send",
-                                        "/test"
+                                        "/test",
+                                        "/pay/notify/**"
                                 ).permitAll();
                         registry.anyRequest().authenticated();
                     }
