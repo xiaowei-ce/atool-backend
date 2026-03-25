@@ -6,7 +6,7 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://192.168.5.2:3306/atool
-    username: root
+    username: atool-user
     password: wei5877261
   data:
     redis:
