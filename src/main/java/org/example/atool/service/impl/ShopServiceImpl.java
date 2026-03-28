@@ -9,17 +9,15 @@ import org.example.atool.entity.po.Goods;
 import org.example.atool.entity.po.Order;
 import org.example.atool.entity.po.OrderGoods;
 import org.example.atool.entity.po.User;
-import org.example.atool.entity.vo.OrdersGoodsInfoVO;
 import org.example.atool.entity.vo.OrderVO;
+import org.example.atool.entity.vo.OrdersGoodsInfoVO;
 import org.example.atool.entity.vo.PayVO;
 import org.example.atool.mapper.GoodsMapper;
 import org.example.atool.mapper.OrderGoodsMapper;
 import org.example.atool.mapper.OrderMapper;
 import org.example.atool.props.EPayProp;
 import org.example.atool.service.ShopService;
-import org.example.atool.utils.PrincipalUtil;
-import org.example.atool.utils.SignUtil;
-import org.example.atool.utils.Throw;
+import org.example.atool.utils.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,10 +35,20 @@ public class ShopServiceImpl implements ShopService {
     private final OrderMapper orderMapper;
     private final OrderGoodsMapper orderGoodsMapper;
     private final EPayProp ePayProp;
+    private final RedisClient redisClient;
 
     @Override
     public List<Goods> goods() {
-        return goodsMapper.onSaleGoods(true);
+        String saleGoodsCache = redisClient.get("cache:sale_goods");
+
+        List<Goods> saleGoods;
+        if (StrUtil.isNotBlank(saleGoodsCache)){
+            saleGoods = JSONUtil.toList(saleGoodsCache, Goods.class);
+        }else {
+            saleGoods = goodsMapper.onSaleGoods(true);
+            redisClient.set("cache:sale_goods",JSONUtil.toJsonStrIncludeNull(saleGoods));
+        }
+        return saleGoods;
     }
 
     @Override

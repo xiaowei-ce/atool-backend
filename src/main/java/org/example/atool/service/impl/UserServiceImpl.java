@@ -94,7 +94,6 @@ public class UserServiceImpl implements UserService {
         if (StrUtil.isNotBlank(authorization) && JWTUtil.verify(authorization, jWTProp.getKey())) {
             JSONObject object = (JSONObject) JWTUtil.parseToken(authorization).getPayload("loginDTO");
             LoginDTO dto = JSONUtil.toBean(object, LoginDTO.class);
-
             if (ObjectUtil.equals(loginDTO, dto)) {
                 redisClient.del(StrUtil.format("token:{}", authorization));
             }
@@ -126,24 +125,41 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetailVO details() {
         User user = PrincipalUtil.user();
-        Long id = user.getId();
+        Long userId = user.getId();
         UserDetailVO vo = new UserDetailVO();
         vo.setStatus(user.getEnable() ? "正常" : "禁用");
         vo.setAccount(user.getAccount());
-        UserDetail userDetail = userDetailMapper.getByUserId(id);
+
+        UserDetail userDetail;
+        String detailsCache = redisClient.get(StrUtil.format("cache:user_detail:{}",userId));
+        if (StrUtil.isNotBlank(detailsCache)){
+            userDetail = JSONUtil.toBean(detailsCache, UserDetail.class);
+        }else {
+            userDetail = userDetailMapper.getByUserId(userId);
+            redisClient.set(StrUtil.format("cache:user_detail:{}",userId), JSONUtil.toJsonStrIncludeNull(userDetail));
+        }
         BeanUtil.copyProperties(userDetail, vo);
         return vo;
     }
 
     @Override
     public List<RecordVO> pageGetRecords(Integer page, Integer size) {
-        return recordMapper.pageGet(PrincipalUtil.user().getId(), page, size);
+
+        Long userId = PrincipalUtil.user().getId();
+        List<RecordVO> recordVOs;
+        String recordsCache = redisClient.get(StrUtil.format("cache:records:{}", userId));
+        if (StrUtil.isNotBlank(recordsCache)){
+            recordVOs = JSONUtil.toList(recordsCache, RecordVO.class);
+        }else {
+            recordVOs = recordMapper.pageGet(userId, page, size);
+            redisClient.set(StrUtil.format("cache:records:{}",userId),JSONUtil.toJsonStrIncludeNull(recordVOs));
+        }
+        return recordVOs;
     }
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public void exchange(String key) {
-
         PointKeys pointKeys = pointKeysMapper.get(key);
         if (Objects.isNull(pointKeys)) {
             Throw.BizExp("未找到卡密，请检查是否输入正确！");
@@ -171,6 +187,8 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public Long lottery() {
         Long userId = PrincipalUtil.user().getId();
+        redisClient.del(StrUtil.format("cache:user_detail:{}",userId));
+        redisClient.del(StrUtil.format("cache:records:{}",userId));
 
         UserDetail userDetail = userDetailMapper.getByUserId(userId);
         LocalDate latestLottery = userDetail.getLatestLottery().toLocalDate();

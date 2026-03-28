@@ -14,6 +14,7 @@ import org.example.atool.mapper.UserDetailMapper;
 import org.example.atool.service.SkyService;
 import org.example.atool.utils.JSONUtil;
 import org.example.atool.utils.PrincipalUtil;
+import org.example.atool.utils.RedisClient;
 import org.example.atool.utils.Throw;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,6 +28,8 @@ public class SkyServiceImpl implements SkyService {
 
     private final UserDetailMapper userDetailMapper;
     private final RecordMapper recordMapper;
+    private final RedisClient redisClient;
+
 
     @Resource
     private SkyApiClient skyApiClient;
@@ -36,6 +39,10 @@ public class SkyServiceImpl implements SkyService {
     public String data(String id) {
 
         Long userId = PrincipalUtil.user().getId();
+
+        redisClient.del(StrUtil.format("cache:user_detail:{}",userId));
+        redisClient.del(StrUtil.format("cache:records:{}",userId));
+
         UserDetail detail = userDetailMapper.getByUserId(userId);
         Long points = detail.getPoints();
         if (points < 50) {
@@ -117,7 +124,6 @@ public class SkyServiceImpl implements SkyService {
                 Throw.BizExp(parsed.toString());
             }
         }
-
         return JSONUtil.toBean(parsed, SkyGiftVO.class);
     }
 }
