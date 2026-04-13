@@ -38,6 +38,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -135,8 +136,15 @@ public class UserServiceImpl implements UserService {
         if (StrUtil.isNotBlank(detailsCache)){
             userDetail = JSONUtil.toBean(detailsCache, UserDetail.class);
         }else {
+            if (StrUtil.contains("null",detailsCache)){
+                Throw.BizExp("用户不存在！");
+            }
             userDetail = userDetailMapper.getByUserId(userId);
-            redisClient.set(StrUtil.format("cache:user_detail:{}",userId), JSONUtil.toJsonStrIncludeNull(userDetail));
+            if (Objects.isNull(userDetail)){
+                redisClient.set(StrUtil.format("cache:user_detail:{}",userId), "null",90L, TimeUnit.SECONDS);
+            }else {
+                redisClient.set(StrUtil.format("cache:user_detail:{}", userId), JSONUtil.toJsonStrIncludeNull(userDetail));
+            }
         }
         BeanUtil.copyProperties(userDetail, vo);
         return vo;
@@ -144,7 +152,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<RecordVO> pageGetRecords(Integer page, Integer size) {
-
         Long userId = PrincipalUtil.user().getId();
         List<RecordVO> recordVOs;
         String recordsCache = redisClient.get(StrUtil.format("cache:records:{}", userId));
@@ -157,6 +164,7 @@ public class UserServiceImpl implements UserService {
         return recordVOs;
     }
 
+    //已废弃
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public void exchange(String key) {
@@ -187,30 +195,38 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public Long lottery() {
         Long userId = PrincipalUtil.user().getId();
-        redisClient.del(StrUtil.format("cache:user_detail:{}",userId));
-        redisClient.del(StrUtil.format("cache:records:{}",userId));
+        RedisLock lock = new RedisLock("lottery:" + userId);
 
-        UserDetail userDetail = userDetailMapper.getByUserId(userId);
-        LocalDate latestLottery = userDetail.getLatestLottery().toLocalDate();
-        if (latestLottery.equals(LocalDate.now())) {
-            Throw.CodeExp(400,"今天已经签到过了");
+        if (lock.tryLock()) {
+            Throw.BizExp("并发请求!");
         }
+        try {
+            UserDetail userDetail = userDetailMapper.getByUserId(userId);
+            LocalDate latestLottery = userDetail.getLatestLottery().toLocalDate();
+            if (latestLottery.equals(LocalDate.now())) {
+                Throw.CodeExp(400, "今天已经签到过了");
+            }
+            Long point = ThreadLocalRandom.current().nextLong(lotteryProp.getMin(), lotteryProp.getMax());
+            userDetail.setLatestLottery(Date.valueOf(LocalDate.now()));
+            userDetail.setPoints(details().getPoints() + point);
+            userDetailMapper.update(userDetail);
 
-        Long point = ThreadLocalRandom.current().nextLong(lotteryProp.getMin(),lotteryProp.getMax());
-        userDetail.setLatestLottery(Date.valueOf(LocalDate.now()));
-        userDetail.setPoints(details().getPoints() + point );
-        userDetailMapper.update(userDetail);
+            Record record = new Record();
+            record.setAbstr("每日签到");
+            record.setChange(+point);
+            record.setTime(Timestamp.valueOf(LocalDateTime.now()));
+            record.setDetail(StrUtil.format("获得了{}积分", point));
+            record.setTypeId(Record.BONUS);
+            record.setUserId(userId);
+            recordMapper.add(record);
 
-        Record record = new Record();
-        record.setAbstr("每日签到");
-        record.setChange(+point);
-        record.setTime(Timestamp.valueOf(LocalDateTime.now()));
-        record.setDetail(StrUtil.format("获得了{}积分",point));
-        record.setTypeId(Record.BONUS);
-        record.setUserId(userId);
-        recordMapper.add(record);
+            redisClient.del(StrUtil.format("cache:user_detail:{}", userId));
+            redisClient.del(StrUtil.format("cache:records:{}", userId));
 
-        return point;
+            return point;
+        }finally {
+            lock.unlock();
+        }
     }
 
 }

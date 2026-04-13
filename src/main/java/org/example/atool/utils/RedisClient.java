@@ -19,15 +19,22 @@ public class RedisClient {
         template.opsForValue().set(key,val,time, unit);
     }
 
+    public boolean setNX(String key, String val){
+        return Boolean.TRUE.equals(template.opsForValue().setIfAbsent(key, val));
+    }
+    public boolean setNX(String key, String val,Long timeout, TimeUnit unit){
+        return Boolean.TRUE.equals(template.opsForValue().setIfAbsent(key, val,timeout,unit));
+    }
+
     public String get(String key){
         return template.opsForValue().get(key);
     }
 
-    public Boolean has(String key){
+    public boolean has(String key){
         return template.hasKey(key);
     }
 
-    public Boolean del(String key){
+    public boolean del(String key){
         return template.delete(key);
     }
 }
