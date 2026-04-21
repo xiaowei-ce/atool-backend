@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.atool.entity.po.Affiche;
 import org.example.atool.mapper.CommonMapper;
 import org.example.atool.utils.JSONUtil;
-import org.example.atool.utils.RedisClient;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -14,16 +14,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CommonServiceImpl {
     private final CommonMapper commonMapper;
-    private final RedisClient redisClient;
+    private final StringRedisTemplate stringRedisTemplate;
 
     public List<Affiche> affiche(Integer size) {
-        String afficheCache = redisClient.get("cache:affiche");
+        String afficheCache = (String) stringRedisTemplate.opsForValue().get("cache:affiche");
         List<Affiche> affiches;
         if (StrUtil.isNotBlank(afficheCache)) {
             affiches = JSONUtil.toList(afficheCache, Affiche.class);
         } else {
             affiches = commonMapper.affiche(size);
-            redisClient.set("cache:affiche",JSONUtil.toJsonStrIncludeNull(affiches));
+            stringRedisTemplate.opsForValue().set("cache:affiche",JSONUtil.toJsonStrIncludeNull(affiches));
         }
         return affiches;
     }

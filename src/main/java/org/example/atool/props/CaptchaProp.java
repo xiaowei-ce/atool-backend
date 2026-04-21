@@ -22,9 +22,6 @@ public class CaptchaProp {
     private Long expire = 120L;
     private TimeUnit expireUnit = TimeUnit.SECONDS;
 
-    private Long resendIn = 60L;
-    private TimeUnit resendUnit = TimeUnit.SECONDS;
-
     private StringBuilder emailTemplate = new StringBuilder();
 
     public void setEmailTemplate(String location) {
@@ -55,7 +52,4 @@ public class CaptchaProp {
         return as.convert(this.expire, this.expireUnit);
     }
 
-    public Object getResendInAs(TimeUnit as) {
-        return as.convert(this.resendIn,this.resendUnit);
-    }
 }

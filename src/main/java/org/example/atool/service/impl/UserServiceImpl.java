@@ -21,7 +21,12 @@ import org.example.atool.props.LotteryProp;
 import org.example.atool.props.RegexProp;
 import org.example.atool.service.CaptchaService;
 import org.example.atool.service.UserService;
-import org.example.atool.utils.*;
+import org.example.atool.utils.JSONUtil;
+import org.example.atool.utils.PrincipalUtil;
+import org.example.atool.utils.RedisLock;
+import org.example.atool.utils.RegexUtil;
+import org.example.atool.utils.Throw;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -51,15 +56,18 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserRoleMapper userRoleMapper;
     private final AuthenticationManager authenticationManager;
-    private final RedisClient redisClient;
+
     private final JWTProp jWTProp;
     private final RecordMapper recordMapper;
     private final PointKeysMapper pointKeysMapper;
     private final LotteryProp lotteryProp;
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public void register(String type, RegisterDTO registerDTO) {
+
+
 
         if (Objects.nonNull(userMapper.getByAccount(registerDTO.getAccount()))) {
             Throw.BizExp("该帐号已被注册！");
@@ -87,6 +95,8 @@ public class UserServiceImpl implements UserService {
         UserDetail detail = new UserDetail();
         detail.setUserId(user.getId());
         userDetailMapper.add(detail);
+
+        stringRedisTemplate.delete(StrUtil.format("captcha:{}:{}", type, registerDTO.getAccount()));
     }
 
     @Override
@@ -96,7 +106,7 @@ public class UserServiceImpl implements UserService {
             JSONObject object = (JSONObject) JWTUtil.parseToken(authorization).getPayload("loginDTO");
             LoginDTO dto = JSONUtil.toBean(object, LoginDTO.class);
             if (ObjectUtil.equals(loginDTO, dto)) {
-                redisClient.del(StrUtil.format("token:{}", authorization));
+                stringRedisTemplate.delete(StrUtil.format("token:{}", authorization));
             }
         }
         String account = loginDTO.getAccount();
@@ -119,7 +129,7 @@ public class UserServiceImpl implements UserService {
         };
         String token = JWTUtil.createToken(payload, jWTProp.getKey());
         String key = StrUtil.format("token:{}", token);
-        redisClient.set(key, JSONUtil.toJsonStrIncludeNull(authenticate.getPrincipal()), jWTProp.getExpire(), jWTProp.getUnit());
+        stringRedisTemplate.opsForValue().set(key, JSONUtil.toJsonStrIncludeNull(authenticate.getPrincipal()), jWTProp.getExpire(), jWTProp.getUnit());
         return token;
     }
 
@@ -132,7 +142,7 @@ public class UserServiceImpl implements UserService {
         vo.setAccount(user.getAccount());
 
         UserDetail userDetail;
-        String detailsCache = redisClient.get(StrUtil.format("cache:user_detail:{}",userId));
+        String detailsCache = (String) stringRedisTemplate.opsForValue().get(StrUtil.format("cache:user_detail:{}",userId));
         if (StrUtil.isNotBlank(detailsCache)){
             userDetail = JSONUtil.toBean(detailsCache, UserDetail.class);
         }else {
@@ -141,9 +151,9 @@ public class UserServiceImpl implements UserService {
             }
             userDetail = userDetailMapper.getByUserId(userId);
             if (Objects.isNull(userDetail)){
-                redisClient.set(StrUtil.format("cache:user_detail:{}",userId), "null",90L, TimeUnit.SECONDS);
+                stringRedisTemplate.opsForValue().set(StrUtil.format("cache:user_detail:{}",userId), "null",90L, TimeUnit.SECONDS);
             }else {
-                redisClient.set(StrUtil.format("cache:user_detail:{}", userId), JSONUtil.toJsonStrIncludeNull(userDetail));
+                stringRedisTemplate.opsForValue().set(StrUtil.format("cache:user_detail:{}", userId), JSONUtil.toJsonStrIncludeNull(userDetail));
             }
         }
         BeanUtil.copyProperties(userDetail, vo);
@@ -154,12 +164,12 @@ public class UserServiceImpl implements UserService {
     public List<RecordVO> pageGetRecords(Integer page, Integer size) {
         Long userId = PrincipalUtil.user().getId();
         List<RecordVO> recordVOs;
-        String recordsCache = redisClient.get(StrUtil.format("cache:records:{}", userId));
+        String recordsCache = (String) stringRedisTemplate.opsForValue().get(StrUtil.format("cache:records:{}", userId));
         if (StrUtil.isNotBlank(recordsCache)){
             recordVOs = JSONUtil.toList(recordsCache, RecordVO.class);
         }else {
             recordVOs = recordMapper.pageGet(userId, page, size);
-            redisClient.set(StrUtil.format("cache:records:{}",userId),JSONUtil.toJsonStrIncludeNull(recordVOs));
+            stringRedisTemplate.opsForValue().set(StrUtil.format("cache:records:{}",userId),JSONUtil.toJsonStrIncludeNull(recordVOs));
         }
         return recordVOs;
     }
@@ -195,7 +205,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public Long lottery() {
         Long userId = PrincipalUtil.user().getId();
-        RedisLock lock = new RedisLock("lottery:" + userId);
+        RedisLock lock = new RedisLock("lottery:" + userId, 10L, stringRedisTemplate);
 
         if (lock.tryLock()) {
             Throw.BizExp("并发请求!");
@@ -220,8 +230,8 @@ public class UserServiceImpl implements UserService {
             record.setUserId(userId);
             recordMapper.add(record);
 
-            redisClient.del(StrUtil.format("cache:user_detail:{}", userId));
-            redisClient.del(StrUtil.format("cache:records:{}", userId));
+            stringRedisTemplate.delete(StrUtil.format("cache:user_detail:{}", userId));
+            stringRedisTemplate.delete(StrUtil.format("cache:records:{}", userId));
 
             return point;
         }finally {

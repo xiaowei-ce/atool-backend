@@ -17,7 +17,11 @@ import org.example.atool.mapper.OrderGoodsMapper;
 import org.example.atool.mapper.OrderMapper;
 import org.example.atool.props.EPayProp;
 import org.example.atool.service.ShopService;
-import org.example.atool.utils.*;
+import org.example.atool.utils.JSONUtil;
+import org.example.atool.utils.PrincipalUtil;
+import org.example.atool.utils.SignUtil;
+import org.example.atool.utils.Throw;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,18 +39,18 @@ public class ShopServiceImpl implements ShopService {
     private final OrderMapper orderMapper;
     private final OrderGoodsMapper orderGoodsMapper;
     private final EPayProp ePayProp;
-    private final RedisClient redisClient;
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     public List<Goods> goods() {
-        String saleGoodsCache = redisClient.get("cache:sale_goods");
+        String saleGoodsCache = (String) stringRedisTemplate.opsForValue().get("cache:sale_goods");
 
         List<Goods> saleGoods;
         if (StrUtil.isNotBlank(saleGoodsCache)){
             saleGoods = JSONUtil.toList(saleGoodsCache, Goods.class);
         }else {
             saleGoods = goodsMapper.onSaleGoods(true);
-            redisClient.set("cache:sale_goods",JSONUtil.toJsonStrIncludeNull(saleGoods));
+            stringRedisTemplate.opsForValue().set("cache:sale_goods",JSONUtil.toJsonStrIncludeNull(saleGoods));
         }
         return saleGoods;
     }

@@ -12,7 +12,11 @@ import org.example.atool.entity.vo.SkyGiftVO;
 import org.example.atool.mapper.RecordMapper;
 import org.example.atool.mapper.UserDetailMapper;
 import org.example.atool.service.SkyService;
-import org.example.atool.utils.*;
+import org.example.atool.utils.JSONUtil;
+import org.example.atool.utils.PrincipalUtil;
+import org.example.atool.utils.RedisLock;
+import org.example.atool.utils.Throw;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -25,17 +29,19 @@ public class SkyServiceImpl implements SkyService {
 
     private final UserDetailMapper userDetailMapper;
     private final RecordMapper recordMapper;
-    private final RedisClient redisClient;
 
+    private StringRedisTemplate stringRedisTemplate;
 
     @Resource
     private SkyApiClient skyApiClient;
+
+
 
     @Override
     @Transactional(rollbackFor = {Exception.class, Error.class})
     public String data(String id) {
         Long userId = PrincipalUtil.user().getId();
-        RedisLock lock = new RedisLock("sky:"+userId);
+        RedisLock lock = new RedisLock("sky:"+userId, 10L, stringRedisTemplate);
         if (!lock.tryLock()) {
             Throw.BizExp("并发请求!");
         }
@@ -99,8 +105,8 @@ public class SkyServiceImpl implements SkyService {
             record.setChange(-cast);
             recordMapper.add(record);
 
-            redisClient.del(StrUtil.format("cache:user_detail:{}", userId));
-            redisClient.del(StrUtil.format("cache:records:{}", userId));
+            stringRedisTemplate.delete(StrUtil.format("cache:user_detail:{}", userId));
+            stringRedisTemplate.delete(StrUtil.format("cache:records:{}", userId));
             return responseContent;
         }finally {
             lock.unlock();

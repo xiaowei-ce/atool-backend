@@ -11,7 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.atool.entity.Result;
 import org.example.atool.props.JWTProp;
 import org.example.atool.security.SecurityDetails;
-import org.example.atool.utils.RedisClient;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.example.atool.utils.ServletUtil;
 import org.jspecify.annotations.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -25,7 +25,7 @@ import java.util.Objects;
 @Component
 @RequiredArgsConstructor
 public class JWTFilter extends OncePerRequestFilter {
-    private final RedisClient redisClient;
+    private final StringRedisTemplate stringRedisTemplate;
     private final JWTProp jWTProp;
 
     @Override
@@ -36,8 +36,8 @@ public class JWTFilter extends OncePerRequestFilter {
             try {
                 if (JWTUtil.verify(authorization, jWTProp.getKey())) {
                     String key = StrUtil.format("token:{}", authorization);
-                    if (redisClient.has(key)) {
-                        String detailJson = redisClient.get(key);
+                    if (stringRedisTemplate.hasKey(key)) {
+                        String detailJson = (String) stringRedisTemplate.opsForValue().get(key);
                         if (StrUtil.isNotBlank(detailJson)) {
                             SecurityDetails details = JSONUtil.toBean(detailJson, SecurityDetails.class);
                             if (Objects.nonNull(details)) {

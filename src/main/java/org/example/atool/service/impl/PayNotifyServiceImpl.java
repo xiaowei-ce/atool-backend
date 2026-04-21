@@ -13,7 +13,7 @@ import org.example.atool.mapper.RecordMapper;
 import org.example.atool.mapper.UserDetailMapper;
 import org.example.atool.props.EPayProp;
 import org.example.atool.service.PayNotifyService;
-import org.example.atool.utils.RedisClient;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.example.atool.utils.SignUtil;
 import org.example.atool.utils.Throw;
 import org.springframework.stereotype.Service;
@@ -32,7 +32,7 @@ public class PayNotifyServiceImpl implements PayNotifyService {
     private final RecordMapper recordMapper;
     private final EPayOrderRecordMapper ePayOrderRecordMapper;
     private final EPayProp ePayProp;
-    private final RedisClient redisClient;
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Transactional(rollbackFor = {Error.class, Exception.class})
     @Override
@@ -79,8 +79,8 @@ public class PayNotifyServiceImpl implements PayNotifyService {
         record.setAbstr("购买积分");
         record.setDetail(StrUtil.format("订单号: {}\n金额: {}RMB\n积分: {}",order.getId(), order.getAmount(),totalPoints));
 
-        redisClient.del(StrUtil.format("cache:user_detail:{}",order.getCreateBy()));
-        redisClient.del(StrUtil.format("cache:records:{}",order.getCreateBy()));
+        stringRedisTemplate.delete(StrUtil.format("cache:user_detail:{}",order.getCreateBy()));
+        stringRedisTemplate.delete(StrUtil.format("cache:records:{}",order.getCreateBy()));
 
         recordMapper.add(record);
     }

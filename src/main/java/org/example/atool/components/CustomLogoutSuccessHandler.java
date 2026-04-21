@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.atool.entity.Result;
-import org.example.atool.utils.RedisClient;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.example.atool.utils.ServletUtil;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
@@ -17,14 +17,14 @@ import org.springframework.stereotype.Component;
 @Slf4j
 public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
-    private final RedisClient redisClient;
+    private final StringRedisTemplate stringRedisTemplate;
 
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) {
         String token = request.getHeader("Authorization");
         if (StrUtil.isNotBlank(token)) {
             log.info("{} try logout",token);
-            if (!redisClient.del(StrUtil.format("token:{}", token))) {
+            if (!Boolean.TRUE.equals(stringRedisTemplate.delete(StrUtil.format("token:{}", token)))) {
                 log.info("{} logout failed",token);
                 ServletUtil.write(response, Result.ok("退出登录失败", null));
                 return;

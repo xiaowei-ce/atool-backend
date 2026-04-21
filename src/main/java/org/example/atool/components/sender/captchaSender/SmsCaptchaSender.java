@@ -36,7 +36,7 @@ public class SmsCaptchaSender implements CaptchaSender {
 //                .setValidTime(captchaProp.getTimeout())
                 .setCodeLength(captchaProp.getCaptchaLen())
 //                .setReturnVerifyCode(true)
-                .setInterval(captchaProp.getResendIn());
+                .setInterval(captchaProp.getExpire());
         RuntimeOptions runtime = new RuntimeOptions();
         try {
             SendSmsVerifyCodeResponse resp = aliCloudClient.sendSmsVerifyCodeWithOptions(sendSmsVerifyCodeRequest, runtime);
