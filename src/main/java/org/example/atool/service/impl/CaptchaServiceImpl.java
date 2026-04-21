@@ -47,8 +47,6 @@ public class CaptchaServiceImpl implements CaptchaService {
             if (stringRedisTemplate.hasKey(checkKey)) {
                 Throw.BizExp(StrUtil.format("请勿{}分钟内重复获取", prop.getExpireAs(TimeUnit.MINUTES)));
             }
-
-            //todo mq
             Msgs.CaptchaSendMsg msg = new Msgs.CaptchaSendMsg(type, target);
             rabbitTemplate.convertAndSend(Msgs.EXCHANGE, Msgs.CAPTCHA_WILL_SEND_ROUTING_KEY, msg);
 
