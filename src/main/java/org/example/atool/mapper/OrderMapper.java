@@ -14,13 +14,15 @@ public interface OrderMapper {
 
     Order statusOrder(@Param("userId") Long userId, @Param("status") Integer status);
 
-    Order orderById(@Param("orderId") String orderId);
+    Order orderById(@Param("orderId") Long orderId);
 
-    void markStatus(@Param("orderId") String orderId, @Param("status") Integer status);
+    void markStatus(@Param("orderId") Long orderId, @Param("status") Integer status);
 
-    Long totalPoints(@Param("orderId") String orderId);
+    Long totalPoints(@Param("orderId") Long orderId);
 
     List<OrderVO> pageOrders(@Param("userId") Long userId, @Param("size") Integer size);
 
-    List<OrdersGoodsInfoVO> goodsInfos(String orderId);
+    List<OrdersGoodsInfoVO> goodsInfos(@Param("orderId") Long orderId);
+
+    Integer markCanceled(@Param("orderId") Long orderId);
 }

@@ -47,7 +47,8 @@ public class PayNotifyServiceImpl implements PayNotifyService {
             }
         }
 
-        Order order = orderMapper.orderById(dto.getOut_trade_no());
+        Long orderId = dto.getOut_trade_no();
+        Order order = orderMapper.orderById(orderId);
 
         if (Objects.isNull(order)){
             Throw.BizExp("订单号不存在！");
@@ -66,7 +67,7 @@ public class PayNotifyServiceImpl implements PayNotifyService {
 
         EPayOrderRecord ePayOrderRecord = new EPayOrderRecord();
         ePayOrderRecord.setPayType(dto.getType());
-        ePayOrderRecord.setOrderId(dto.getOut_trade_no());
+        ePayOrderRecord.setOrderId(orderId.toString());
         ePayOrderRecord.setEpayNo(dto.getTrade_no());
         ePayOrderRecord.setEpayStatus(dto.getTrade_status());
         ePayOrderRecordMapper.addRecord(ePayOrderRecord);

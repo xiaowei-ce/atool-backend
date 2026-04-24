@@ -35,4 +35,8 @@
         from goods join order_goods on goods.id = order_goods.goods_id
         where order_goods.order_id = #{orderId};
     </select>
+    
+    <update id="markCanceled">
+        update `order` set status = 3 where id = #{orderId} and status = 1;
+    </update>
 </mapper>

@@ -13,11 +13,13 @@ public interface ShopService {
 
     OrderVO order(List<SubmitGoodsDTO> ids);
 
-    PayVO pay(String orderId);
+    PayVO pay(Long orderId);
 
     List<OrderVO> orders(Integer size);
 
-    List<OrdersGoodsInfoVO> orderGoods(String orderId);
+    List<OrdersGoodsInfoVO> orderGoods(Long orderId);
 
-    void markCanceled(String orderId);
+    void markCanceled(Long orderId);
+
+    OrderVO orderById(Long orderId);
 }

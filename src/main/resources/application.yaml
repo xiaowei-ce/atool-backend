@@ -35,10 +35,19 @@ spring:
     template:
       retry:
         max-attempts: 3
-        multiplier: 1
+        multiplier: 1.5
         initial-interval: 500ms
         max-interval: 1000ms
         enabled: true
+    listener:
+      simple:
+        retry:
+          stateless: true
+          max-attempts: 3
+          max-interval: 1500ms
+          initial-interval: 500ms
+          multiplier: 1.5
+          enabled: true
 
 mybatis-plus:
   mapper-locations: classpath*:/mapper/**/*.xml

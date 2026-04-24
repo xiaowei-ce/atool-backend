@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Data
 public class OrdersGoodsInfoVO {
     private Integer count;
-    private Long id;
+    private String id;
     private String name;
     private BigDecimal price;
     private Boolean forSale;

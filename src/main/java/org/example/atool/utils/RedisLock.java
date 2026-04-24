@@ -1,5 +1,6 @@
 package org.example.atool.utils;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.script.DefaultRedisScript;
@@ -9,7 +10,7 @@ import java.time.Duration;
 import java.util.Collections;
 import java.util.UUID;
 
-
+@RequiredArgsConstructor
 public class RedisLock {
 
     private Duration timeout = Duration.ofSeconds(10);

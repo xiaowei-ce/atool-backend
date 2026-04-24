@@ -10,5 +10,5 @@ import java.util.List;
 public interface OrderGoodsMapper {
     void add(@Param("orderGoods") List<OrderGoods> orderGoods);
 
-    List<OrderGoods> orderGoods(@Param("orderId") String orderId);
+    List<OrderGoods> orderGoods(@Param("orderId") Long orderId);
 }

@@ -59,7 +59,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     public void verify(String type, String target, String code) {
         String expireCheckKey = StrUtil.format("captcha:{}:{}", type, target);
         if (stringRedisTemplate.hasKey(expireCheckKey)) {
-            String get = (String) stringRedisTemplate.opsForValue().get(expireCheckKey);
+            String get = stringRedisTemplate.opsForValue().get(expireCheckKey);
             if (!StrUtil.contains(get, code)) {
                 Throw.BizExp("验证码不正确");
             }

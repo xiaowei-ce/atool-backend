@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 public class PayNotifyDTO {
     private String pid;
     private String trade_no;
-    private String out_trade_no;
+    private Long out_trade_no;
     private String type;
     private String name;
     private String money;

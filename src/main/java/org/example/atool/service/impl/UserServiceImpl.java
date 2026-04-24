@@ -207,7 +207,7 @@ public class UserServiceImpl implements UserService {
         Long userId = PrincipalUtil.user().getId();
         RedisLock lock = new RedisLock("lottery:" + userId, 10L, stringRedisTemplate);
 
-        if (lock.tryLock()) {
+        if (!lock.tryLock()) {
             Throw.BizExp("并发请求!");
         }
         try {

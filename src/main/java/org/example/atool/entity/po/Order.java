@@ -14,7 +14,7 @@ public class Order {
 
   public static final Integer PENDING = 1, PAYED = 2, CANCELED = 3;
 
-  private String id;
+  private Long id;
   private BigDecimal amount;
   private String name;
   private Long createBy;

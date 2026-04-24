@@ -1,19 +1,19 @@
 package org.example.atool.controller;
 
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.StrUtil;
 import lombok.RequiredArgsConstructor;
 import org.example.atool.entity.Result;
 import org.example.atool.entity.dto.SubmitGoodsDTO;
 import org.example.atool.entity.po.Goods;
-import org.example.atool.entity.vo.OrdersGoodsInfoVO;
 import org.example.atool.entity.vo.OrderVO;
+import org.example.atool.entity.vo.OrdersGoodsInfoVO;
 import org.example.atool.entity.vo.PayVO;
 import org.example.atool.service.ShopService;
 import org.example.atool.utils.Throw;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Objects;
 
 @RequiredArgsConstructor
 @RestController
@@ -38,17 +38,26 @@ public class ShopController {
     }
 
     @GetMapping("/pay/{orderId}")
-    public Result pay(@PathVariable String orderId){
-        if (StrUtil.isBlank(orderId)){
+    public Result pay(@PathVariable Long orderId){
+        if (Objects.isNull(orderId)) {
             Throw.BizExp("订单号为空");
         }
         PayVO vo = shopService.pay(orderId);
         return Result.ok("success",vo);
     }
 
+    @GetMapping("/order/by/{orderId}")
+    public Result orderByOrderId(@PathVariable("orderId") Long orderId){
+        if (Objects.isNull(orderId)) {
+            Throw.BizExp("订单号为空");
+        }
+        OrderVO orderVO = shopService.orderById(orderId);
+        return Result.ok("success",orderVO);
+    }
+
     @GetMapping("/orderGoodsInfos/{orderId}")
-    public Result orderGoodsInfos(@PathVariable String orderId){
-        if (StrUtil.isBlank(orderId)){
+    public Result orderGoodsInfos(@PathVariable Long orderId){
+        if (Objects.isNull(orderId)) {
             Throw.BizExp("订单号为空");
         }
         List<OrdersGoodsInfoVO> orderGoods = shopService.orderGoods(orderId);
@@ -62,8 +71,8 @@ public class ShopController {
     }
 
     @PutMapping("/markCanceled/{orderId}")
-    public Result markOrderCanceled(@PathVariable String orderId){
-        if (StrUtil.isBlank(orderId)){
+    public Result markOrderCanceled(@PathVariable Long orderId){
+        if (Objects.isNull(orderId)) {
             Throw.BizExp("订单号为空");
         }
         shopService.markCanceled(orderId);
