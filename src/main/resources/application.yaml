@@ -17,8 +17,8 @@ spring:
       timeout: 1800
   mail:
     host: smtp.qq.com
-    username: 3684779724@qq.com
-    password: ogrzjsznsjxdciic
+    username: 
+    password: 
     port: 465
     protocol: smtp
     ssl:
@@ -93,7 +93,7 @@ atool:
     min: 20
     max: 35
   epay:
-    key: U51Sy51Pi5XuSSorU159FSS71sOURVsR
+    key: 
     return-url: http://sky.with.us.in/payment/notify
     notify-url: http://skyapi.with.us.in/pay/notify/call
     pid: 1010
